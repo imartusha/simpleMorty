@@ -46,7 +46,7 @@ class EpisodesAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): EpisodeViewHolder {
-        Log.e("Marta super", "first commit")
+        Log.e("Marta super", "second commit")
         val inflater = LayoutInflater.from(parent.context)
         itemEpisodeBinding = ItemEpisodeBinding.inflate(inflater, parent, false)
         val view = binding.root
