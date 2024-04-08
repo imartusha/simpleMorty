@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--suppress NavigationFile -->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/charactersListFragment">
+    <fragment
+        android:id="@+id/charactersListFragment"
+        android:name="com.example.simplemorty.presentation.screens.characters_list.CharactersListFragment"
+        android:label="Characters"
+        tools:layout="@layout/characterslist">
+        <action
+            android:id="@+id/action_charactersListFragment_to_infoFragment"
+            app:destination="@id/infoFragment"
+            />
+
+    </fragment>
+    <fragment
+        android:id="@+id/episodesFragment"
+        android:name="com.example.simplemorty.presentation.screens.episodes_list.EpisodesFragment"
+        android:label="Episodes"
+        tools:layout="@layout/episodes_list" >
+        <action
+            android:id="@+id/action_episodesFragment_to_infoEpisodeFragment"
+            app:destination="@id/infoEpisodeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/locationsFragment"
+        android:name="com.example.simplemorty.presentation.screens.locations_list.LocationsFragment"
+        android:label="@string/locations"
+        tools:layout="@layout/locations_list" />
+    <fragment
+        android:id="@+id/infoFragment"
+        android:name="com.example.simplemorty.presentation.screens.character_info.InfoCharacterFragment"
+        android:label="InfoFragment">
+        <argument
+            android:name="id"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/infoEpisodeFragment"
+        android:name="com.example.simplemorty.presentation.screens.episode_info.InfoEpisodeFragment"
+        android:label="InfoEpisodeFragment" >
+        <argument
+            android:name="id"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_infoEpisodeFragment_to_infoFragment"
+            app:destination="@id/infoFragment" />
+    </fragment>
+</navigation>

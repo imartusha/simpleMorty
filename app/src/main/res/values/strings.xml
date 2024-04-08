@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">simpleMorty</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="locations">Locations</string>
+    <string name="characters">Characters</string>
+    <string name="episodes">Episodes</string>
+    <string name="location">Location</string>
+    <string name="episode">Episode</string>
+    <string name="homeland">Homeland</string>
+    <string name="created">Created</string>
+    <string name="type">Type</string>
+    <string name="status">Status</string>
+    <string name="species">Species</string>
+    <string name="gender">Gender</string>
+    <string name="character_name">Character Name</string>
+    <string name="airdate">AirDate</string>
+    <string name="welcome_to_rick_and_morty_app">Welcome To Rick And Morty App!</string>
+</resources>

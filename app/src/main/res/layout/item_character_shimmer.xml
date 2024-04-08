@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+
+    android:paddingStart="10dp"
+    android:paddingTop="5dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="5dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imgChar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@color/white"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/RoundedImageView"
+        app:srcCompat="@drawable/char_placeholder" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/charItem"
+        android:layout_width="match_parent"
+        android:layout_height="148dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <TextView
+            android:id="@+id/characterName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:text="CharacterName"
+            android:textColor="@color/royalBlue"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/imgLang"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+
+        <ImageView
+
+            android:id="@+id/imgLang"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/baseline_api_24"
+            app:layout_constraintBottom_toTopOf="@+id/imgDate"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/characterName"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:tint="@color/royalBlue"
+
+            />
+
+        <TextView
+            android:id="@+id/species"
+            android:layout_width="39dp"
+            android:layout_height="15dp"
+            android:layout_marginStart="4dp"
+            android:text="species"
+            android:textColor="@color/royalBlue"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/imgLang"
+            app:layout_constraintStart_toEndOf="@+id/imgLang"
+            app:layout_constraintTop_toTopOf="@+id/imgLang" />
+
+        <ImageView
+            android:id="@+id/imgDate"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/shimmer_item_color"
+            android:src="@drawable/baseline_brightness_1_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imgLang"
+            app:layout_constraintVertical_chainStyle="packed"
+
+            app:tint="@color/royalBlue" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="status"
+            android:textColor="@color/royalBlue"
+            android:textSize="11sp"
+            android:textStyle="bold"
+
+            app:layout_constraintBottom_toBottomOf="@+id/imgDate"
+            app:layout_constraintStart_toEndOf="@+id/imgDate"
+            app:layout_constraintTop_toTopOf="@+id/imgDate" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</LinearLayout>

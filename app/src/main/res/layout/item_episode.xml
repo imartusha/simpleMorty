@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <!-- Название эпизода -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewEpisodeName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Episode Name"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        />
+
+    <!-- Номер эпизода -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewEpisodeNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Episode Number"
+        android:textColor="@color/black"
+        />
+
+    <!-- Дата релиза -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewAirDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Air Date"
+        android:textColor="@color/black"
+        />
+</LinearLayout>

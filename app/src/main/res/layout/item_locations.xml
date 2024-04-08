@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <!-- Название эпизода -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewLocationName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Location Name"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        />
+
+    <!-- Номер эпизода -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Type"
+        android:textColor="@color/black"
+        />
+
+    <!-- Дата релиза -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewDimension"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Dimension"
+        android:textColor="@color/black"
+        />
+</LinearLayout>
