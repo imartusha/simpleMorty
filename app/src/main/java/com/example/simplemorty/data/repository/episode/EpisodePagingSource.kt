@@ -41,6 +41,7 @@ internal class EpisodePagingSource (
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
+        Log.e("Marta super", "123")
     }
 
     override fun getRefreshKey(state: PagingState<Int, Episode>): Int? {
