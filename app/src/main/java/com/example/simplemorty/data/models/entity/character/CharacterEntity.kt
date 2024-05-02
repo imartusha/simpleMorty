@@ -9,25 +9,39 @@ import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Homeland
 import com.example.simplemorty.domain.models.Location
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 
 
 @Entity(tableName = "characters")
 @TypeConverters(Converters::class)
 class CharacterEntity(
-    @PrimaryKey(autoGenerate = false)
-    val id: Int,
-    val name: String,
-    val created: String,
-    val episode: List<String>,
-    val gender: String,
-    val image: String,
-    val location: Location,
-    val homeland: Homeland,
-    val species: String,
-    val status: String,
-    val type: String,
-    val url: String
+    @PrimaryKey @field:SerializedName("id")
+    val id: Int? = 0,
+    @SerializedName("created")
+    val created: String? = "",
+    @SerializedName("episode")
+    val episode: List<String>? = listOf(),
+    @SerializedName("gender")
+    val gender: String? = "",
+    @SerializedName("image")
+    val image: String? = "",
+    @SerializedName("location")
+    val location: Location?,
+    @SerializedName("name")
+    val name: String? = "",
+    @SerializedName("origin")
+    val homeland: Homeland?,
+    @SerializedName("species")
+    val species: String? = "",
+    @SerializedName("status")
+    val status: String? = "",
+    @SerializedName("type")
+    val type: String? = "",
+    @SerializedName("url")
+    val url: String? = "",
+    @SerializedName("isFavorite")
+    var isFavorite: Boolean
 ) {
 }
 
@@ -67,52 +81,55 @@ object Converters {
     }
 }
 
-fun mapToCharacterEntity(characterProfile: CharacterProfile): CharacterEntity {
+fun CharacterProfile.toCharacterEntity(): CharacterEntity {
     return CharacterEntity(
-        created = characterProfile.created,
-        episode = characterProfile.episode,
-        gender = characterProfile.gender,
-        id = characterProfile.id,
-        image = characterProfile.image,
-        location = characterProfile.location,
-        name = characterProfile.name,
-        homeland = characterProfile.homeland,
-        species = characterProfile.species,
-        status = characterProfile.status,
-        type = characterProfile.type,
-        url = characterProfile.url
+        created = created,
+        episode = episode,
+        gender = gender,
+        id = id,
+        image = image,
+        location = location,
+        name = name,
+        homeland =homeland,
+        species = species,
+        status = status,
+        type = type,
+        url = url,
+        isFavorite = isFavorite
     )
 }
 
-fun mapEntityToCharacterProfile(characterEntity: CharacterEntity): CharacterProfile {
+fun CharacterEntity.toCharacterProfile(): CharacterProfile {
     return CharacterProfile(
-        id = characterEntity.id,
-        created = characterEntity.created,
-        episode = characterEntity.episode,
-        gender = characterEntity.gender,
-        image = characterEntity.image,
-        location = characterEntity.location,
-        name = characterEntity.name,
-        homeland = characterEntity.homeland,
-        species = characterEntity.species,
-        status = characterEntity.status,
-        type = characterEntity.type,
-        url = characterEntity.url
+        created = created,
+        episode = episode,
+        gender = gender,
+        id = id,
+        image = image,
+        location = location,
+        name = name,
+        homeland =homeland,
+        species = species,
+        status = status,
+        type = type,
+        url = url,
+        isFavorite = isFavorite
     )
 }
-fun mapFromDTOToCharacterEntity(characterDTO: CharacterDTO): CharacterEntity {
+fun CharacterDTO.toCharacterEntity(): CharacterEntity {
     return CharacterEntity(
-        id = characterDTO.id,
-        created = characterDTO.created,
-        episode = characterDTO.episode,
-        gender = characterDTO.gender,
-        image = characterDTO.image,
-        location =characterDTO.location,
-        name = requireNotNull(characterDTO.name),
-        homeland = requireNotNull(characterDTO.homeland),
-        species = characterDTO.species,
-        status = characterDTO.status,
-        type = characterDTO.type,
-        url = characterDTO.url
+        created = created,
+        episode = episode,
+        gender = gender,
+        id = id,
+        image = image,
+        location = location,
+        name = name,
+        homeland =homeland,
+        species = species,
+        status = status,
+        type = type,
+        url = url,
+        isFavorite = isFavorite
     )
 }

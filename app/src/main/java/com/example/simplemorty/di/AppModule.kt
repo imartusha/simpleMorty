@@ -1,10 +1,11 @@
 package com.example.simplemorty.di
 
 import androidx.room.Room
-import com.example.simplemorty.data.database.character.CachedCharacterDao
+import com.example.simplemorty.data.database.character.cach.CachedCharacterDao
 import com.example.simplemorty.data.database.character.CharacterDao
-import com.example.simplemorty.data.database.character.CharacterRemoteKeyDao
-import com.example.simplemorty.data.database.character.CharactersDataBase
+import com.example.simplemorty.data.database.character.RemoteKeysDao
+import com.example.simplemorty.data.database.character.DataBase
+import com.example.simplemorty.data.database.character.FavoriteCharacterDao
 import com.example.simplemorty.data.database.character.MY_DATA_BASE
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -31,14 +32,24 @@ import com.example.simplemorty.presentation.screens.episodes_list.EpisodesViewMo
 import com.example.simplemorty.presentation.screens.character_info.InfoCharacterViewModel
 import com.example.simplemorty.presentation.screens.episode_info.InfoEpisodeViewModel
 import com.example.simplemorty.presentation.screens.locations_list.LocationsViewModel
+import okhttp3.Cache
+import okhttp3.Protocol
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.GlobalContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
+import java.util.concurrent.TimeUnit
 
 fun injectFeature() = loadFeature
+
+fun provideCache(cacheDir: File): Cache {
+    val cacheSize = 10 * 1024 * 1024 // 10 MB
+    return Cache(cacheDir, cacheSize.toLong())
+}
+
 
 private val loadFeature by lazy {
     GlobalContext.loadKoinModules(appModule)
@@ -73,13 +84,22 @@ val appModule = module {
             getCharactersListForInfo = get()
         )
     }
-
     single {
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        provideCache(androidContext().cacheDir)
+    }
+    single {
 
+        val httpLoggingInterceptor = HttpLoggingInterceptor()
+        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        val cache = provideCache(androidContext().cacheDir)
         OkHttpClient.Builder()
-            .addInterceptor(interceptor)
+            .cache(cache)
+            .addInterceptor(httpLoggingInterceptor)
+            .protocols(listOf(Protocol.HTTP_1_1))
+            .callTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
             .build()
     }
 
@@ -105,23 +125,25 @@ val appModule = module {
         retrofit.create(EpisodeApi::class.java)
     }
 
-    single<CharacterDao> {
-        get<CharactersDataBase>()
-            .getCharacterDao()
-    }
-    single<CharacterRemoteKeyDao> {
-        get<CharactersDataBase>()
+
+    single<RemoteKeysDao> {
+        get<DataBase>()
             .remoteKeysDao
     }
+    single<FavoriteCharacterDao> {
+        get<DataBase>()
+            .favoriteDao
+    }
+
     single<CachedCharacterDao> {
-        get<CharactersDataBase>()
+        get<DataBase>()
             .cacheDao
     }
 
-    single<CharactersDataBase> {
+    single<DataBase> {
         Room.databaseBuilder(
             androidContext(),
-            CharactersDataBase::class.java,
+            DataBase::class.java,
             MY_DATA_BASE
         )
             .fallbackToDestructiveMigration()
@@ -137,7 +159,7 @@ val appModule = module {
         CharactersRepositoryImpl(
             characterApi = get(),
             characterDao = get(),
-            charactersDataBase = get()
+            dataBase = get()
         )
     }
     single<CharacterRemoteMediator> {
@@ -181,7 +203,7 @@ val appModule = module {
     single<EpisodesRepository> {
         EpisodesRepositoryImpl(
             episodeApi = get(),
-            charactersDataBase = get()
+            dataBase = get()
         )
     }
     factory<GetInfoEpisodeByIdUseCase> {

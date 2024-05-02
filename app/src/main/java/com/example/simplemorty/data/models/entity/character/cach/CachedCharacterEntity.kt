@@ -1,4 +1,4 @@
-package com.example.simplemorty.data.models.entity.character
+package com.example.simplemorty.data.models.entity.character.cach
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -16,18 +16,31 @@ import com.google.gson.reflect.TypeToken
 @TypeConverters(ConvertersCachedCharacterEntity::class)
 data class CachedCharacterEntity(
     @PrimaryKey @field:SerializedName("id")
-    val id: Int,
-    val name: String,
-    val created: String,
-    val episode: List<String>,
-    val gender: String,
-    val image: String,
-    val location: Location,
-    val homeland: Homeland?,
-    val species: String,
-    val status: String,
-    val type: String,
-    val url: String
+    val id: Int? = 0,
+    @SerializedName("created")
+    val created: String? = "",
+    @SerializedName("episode")
+    val episode: List<String>? = listOf(),
+    @SerializedName("gender")
+    val gender: String? = "",
+    @SerializedName("image")
+    val image: String? = "",
+    @SerializedName("location")
+    val location: Location?,
+    @SerializedName("name")
+    val name: String? = "",
+    @SerializedName("origin")
+    val homeland:Homeland?,
+    @SerializedName("species")
+    val species: String? = "",
+    @SerializedName("status")
+    val status: String? = "",
+    @SerializedName("type")
+    val type: String? = "",
+    @SerializedName("url")
+    val url: String? = "",
+    var isFavorite: Boolean
+
 )
 object ConvertersCachedCharacterEntity {
     private val gson = Gson()
@@ -66,41 +79,43 @@ object ConvertersCachedCharacterEntity {
 }
 
 
-fun mapToCachedCharacterEntity(characterDTO: CharacterDTO): CachedCharacterEntity {
+fun CharacterDTO.toCachedCharacterEntity(): CachedCharacterEntity {
     return CachedCharacterEntity(
-        id = characterDTO.id,
-        name = requireNotNull(characterDTO.name),
-        status = characterDTO.status,
-        species = characterDTO.species,
-        type = characterDTO.type,
-        gender = characterDTO.gender,
-        created = characterDTO.created,
-        episode = characterDTO.episode,
-        image = characterDTO.image,
-        location = characterDTO.location,
-        homeland = requireNotNull(characterDTO.homeland),
-        url = characterDTO.url
+        created = created,
+        episode = episode,
+        gender = gender,
+        id = id,
+        image = image,
+        location = location,
+        name = name,
+        homeland =homeland,
+        species = species,
+        status = status,
+        type = type,
+        url = url,
+        isFavorite = isFavorite
     )
 }
-fun mapCachedToCharacterProfile(cachedCharacterEntity: CachedCharacterEntity): CharacterProfile {
+fun CachedCharacterEntity.toCharacterProfile(): CharacterProfile {
     return CharacterProfile(
-        id = cachedCharacterEntity.id,
-        name = requireNotNull(cachedCharacterEntity.name),
-        status = cachedCharacterEntity.status,
-        species = cachedCharacterEntity.species,
-        type = cachedCharacterEntity.type,
-        gender = cachedCharacterEntity.gender,
-        created = cachedCharacterEntity.created,
-        episode = cachedCharacterEntity.episode,
-        image = cachedCharacterEntity.image,
-        location = cachedCharacterEntity.location,
-        homeland = requireNotNull(cachedCharacterEntity.homeland),
-        url = cachedCharacterEntity.url
+        created = created,
+        episode = episode,
+        gender = gender,
+        id = id,
+        image = image,
+        location = location,
+        name = name,
+        homeland =homeland,
+        species = species,
+        status = status,
+        type = type,
+        url = url,
+        isFavorite = isFavorite
     )
 }
 
 fun mapToCachedCharacterEntity(characters: List<CharacterDTO>): List<CachedCharacterEntity> {
     return characters.map { characterDTO ->
-        mapToCachedCharacterEntity(characterDTO)
+        characterDTO.toCachedCharacterEntity()
     }
 }

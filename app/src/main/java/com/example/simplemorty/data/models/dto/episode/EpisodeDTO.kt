@@ -1,10 +1,19 @@
 package com.example.simplemorty.data.models.dto.episode
 
+import android.os.Parcelable
 import com.example.simplemorty.data.models.entity.episode.EpisodeEntity
 import com.example.simplemorty.data.models.response.Result
 import com.example.simplemorty.domain.models.Episode
+import com.example.simplemorty.domain.models.Info
+import kotlinx.parcelize.Parcelize
 import com.google.gson.annotations.SerializedName
 
+data class EpisodeResponse(
+    @SerializedName("info")
+    val info: Info? ,
+    @SerializedName("results")
+    val results: List<EpisodeDTO>? = emptyList()
+)
 class EpisodeDTO(
 
     @SerializedName("air_date")

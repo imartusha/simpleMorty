@@ -1,11 +1,11 @@
-package com.example.simplemorty.data.database.character
+package com.example.simplemorty.data.database.character.cach
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.simplemorty.data.models.entity.character.CachedCharacterEntity
+import com.example.simplemorty.data.models.entity.character.cach.CachedCharacterEntity
 
 @Dao
 interface CachedCharacterDao {
