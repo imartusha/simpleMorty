@@ -12,9 +12,7 @@ class GetEpisodesListForCharacterInfoUseCase(
             episodeUrl.substringAfterLast("/")
         }
         val episodesFromDb = episodesRepository.getMultipleEpisodeFromDb(episodeIdsList)
-        return if (episodesFromDb.isNotEmpty()) {
-            episodesFromDb
-        } else {
+        return episodesFromDb.ifEmpty {
             episodesRepository.getMultipleEpisode(episodeIdsList.joinToString(","))
         }
     }
