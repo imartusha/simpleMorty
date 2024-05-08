@@ -12,8 +12,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simplemorty.databinding.EpisodesListBinding
-import com.example.simplemorty.presentation.adapter.EpisodesAdapter
-import com.example.simplemorty.presentation.adapter.character_adapter.CharactersAdapter
+import com.example.simplemorty.presentation.adapter.episode_adapter.EpisodesAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -26,9 +25,9 @@ class EpisodesFragment : Fragment() {
 
     private val viewModel: EpisodesViewModel by viewModel<EpisodesViewModel>()
     private lateinit var adapter: EpisodesAdapter
+
     private lateinit var navController: NavController
     private lateinit var layoutManager: LinearLayoutManager
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,8 +45,7 @@ class EpisodesFragment : Fragment() {
         navController = findNavController()
         layoutManager = LinearLayoutManager(activity)
 
-
-        adapter = EpisodesAdapter() { episode ->
+        adapter = EpisodesAdapter { episode ->
             val action = EpisodesFragmentDirections
                 .actionEpisodesFragmentToInfoEpisodeFragment(episode.id)
             findNavController().navigate(action)

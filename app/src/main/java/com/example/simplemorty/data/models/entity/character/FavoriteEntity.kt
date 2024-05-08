@@ -53,7 +53,8 @@ fun FavoriteEntity.toCharacterProfile(): CharacterProfile {
         homeland = homeland,
         location = location,
         image = image,
-        isFavorite = isFavorite
+        isFavorite = isFavorite,
+        episode = requireNotNull(episode)
     )
 }
 fun CharacterProfile.toFavoriteEntity(): FavoriteEntity {

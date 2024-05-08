@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityMainBinding
-    private var backButtonCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -38,6 +37,9 @@ class MainActivity : AppCompatActivity() {
 
         val navView: BottomNavigationView = binding.navView
         navView.setupWithNavController(navController)
+
+        binding.toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
-    override fun onSupportNavigateUp() = findNavController(R.id.nav_host_fragment).navigateUp()
 }

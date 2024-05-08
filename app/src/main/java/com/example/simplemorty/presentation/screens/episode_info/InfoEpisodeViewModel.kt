@@ -1,24 +1,19 @@
 package com.example.simplemorty.presentation.screens.episode_info
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.example.simplemorty.data.models.response.ApiResponse
 import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Episode
 import com.example.simplemorty.domain.useCase.character.GetCharactersListForInfo
-import com.example.simplemorty.domain.useCase.episode.GetInfoEpisodeByIdUseCase
-import com.example.simplemorty.utils.formatDateString
+import com.example.simplemorty.domain.useCase.episode.GetEpisodeByIdUseCase
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 
 class InfoEpisodeViewModel(
-    private val getInfoEpisodeByIdUseCase: GetInfoEpisodeByIdUseCase,
+    private val getEpisodeByIdUseCase: GetEpisodeByIdUseCase,
     private val getCharactersListForInfo: GetCharactersListForInfo
 ) : ViewModel() {
 
@@ -44,33 +39,38 @@ class InfoEpisodeViewModel(
 
     private fun getEpisodeById(id: Int) {
         viewModelScope.launch {
-            getInfoEpisodeByIdUseCase.getInfoEpisode(id).collectLatest {
-                when (it) {
-                    is ApiResponse.Progress -> {
-                        progressStateFlow.value = true
-                    }
-
-                    is ApiResponse.Success -> {
-                        episodeByIdStateFlow.emit(it.data)
-                        progressStateFlow.value = false
-
-                        it.data?.let { episode ->
-                            getListCharactersForEpisode(episode)
+            val episodeFfromDb = getEpisodeByIdUseCase.getEpisodesByIdFromDb(id = id)
+            if (episodeFfromDb != null) {
+                episodeByIdStateFlow.emit((episodeFfromDb))
+            } else {
+                getEpisodeByIdUseCase.getEpisodeById(id).collectLatest {
+                    when (it) {
+                        is ApiResponse.Progress -> {
+                            progressStateFlow.value = true
                         }
-                    }
 
-                    is ApiResponse.Failure -> {
-                        try {
-                            val errorResponse = Gson().fromJson(
-                                it.data!!.errorBody()!!.string(),
-                                Episode::class.java
-                            )
-                            episodeByIdStateFlow.emit(errorResponse)
-                        } catch (e: Exception) {
-                            //   toastMessageObserver.setValue("Connection failed.")
+                        is ApiResponse.Success -> {
+                            episodeByIdStateFlow.emit(it.data)
+                            progressStateFlow.value = false
+
+                            it.data?.let { episode ->
+                                getListCharactersForEpisode(episode)
+                            }
                         }
-                        progressStateFlow.value = false
 
+                        is ApiResponse.Failure -> {
+                            try {
+                                val errorResponse = Gson().fromJson(
+                                    it.data!!.errorBody()!!.string(),
+                                    Episode::class.java
+                                )
+                                episodeByIdStateFlow.emit(errorResponse)
+                            } catch (e: Exception) {
+                                //   toastMessageObserver.setValue("Connection failed.")
+                            }
+                            progressStateFlow.value = false
+
+                        }
                     }
                 }
             }
@@ -83,7 +83,6 @@ class InfoEpisodeViewModel(
             characters
         }
     }
-
 
 //    private fun updateEpisodeInfo(
 //        state: ScreenStateEpisode,

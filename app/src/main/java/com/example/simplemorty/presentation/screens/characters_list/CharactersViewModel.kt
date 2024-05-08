@@ -32,6 +32,8 @@ class CharactersViewModel(
                     .cachedIn(viewModelScope)
                     .collectLatest { pagingData ->
                         _characters.value = pagingData
+                        Log.e("MyTag", "New data emitted to UI: $pagingData")
+
                     }
             } catch (e: Exception) {
                 Log.e("MyTag", "Error in getCharacters: ${e.message}", e)

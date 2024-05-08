@@ -13,7 +13,7 @@ data class CharacterProfile(
     @SerializedName("created")
     val created: String? = "",
     @SerializedName("episode")
-    val episode: List<String>? = listOf(),
+    val episode: List<String>,
     @SerializedName("gender")
     val gender: String? = "",
     @SerializedName("image")

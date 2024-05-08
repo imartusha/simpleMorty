@@ -1,11 +1,15 @@
 package com.example.simplemorty.data.models.dto.episode
 
 import android.os.Parcelable
+import com.example.simplemorty.data.models.dto.character.CharacterDTO
+import com.example.simplemorty.data.models.dto.character.toCharacterProfile
 import com.example.simplemorty.data.models.entity.episode.EpisodeEntity
+import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Episode
 import com.example.simplemorty.domain.models.Info
 import kotlinx.parcelize.Parcelize
 import com.google.gson.annotations.SerializedName
+import retrofit2.Response
 
 
 class EpisodeDTO(
@@ -19,6 +23,12 @@ class EpisodeDTO(
     val name: String,
     val url: String
 )
+
+internal fun mapToEpisodeResponse(responseDTO: Response<EpisodeDTO>): Response<Episode> {
+    val episodeDTO = responseDTO.body()
+    val episode = episodeDTO?.toEpisode()
+    return Response.success(episode)
+}
 
 internal fun EpisodeDTO.toEpisode(): Episode {
     return Episode(

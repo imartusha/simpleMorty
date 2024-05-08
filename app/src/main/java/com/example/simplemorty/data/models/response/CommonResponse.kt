@@ -21,18 +21,11 @@ sealed class ApiResponse<out T> {
     }
 }
 
-data class CommonResponse<V>(
+data class CommonResponse<T>(
     @SerializedName("info")
     val info: Info?,
     @SerializedName("results")
-    val results: List<V>? = emptyList()
-)
-
-data class EpisodeResponse(
-    @SerializedName("info")
-    val info: Info? ,
-    @SerializedName("results")
-    val results: List<Episode>? = emptyList()
+    val results: List<T>? = emptyList()
 )
 
 data class LocationResponse(

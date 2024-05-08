@@ -43,13 +43,14 @@ class CharactersListFragment : Fragment() {
         navController = findNavController()
 
         layoutManager = LinearLayoutManager(activity)
-        Log.e("MyTag", "до создлания адаптера")
+        Log.e("MyTag", "до создания адаптера")
         adapter = CharactersAdapter() { characterProfile ->
             val action = CharactersListFragmentDirections
                 .actionCharactersListFragmentToInfoFragment(characterProfile.id!!)
             findNavController().navigate(action)
         }
-        Log.e("MyTag", "после создлания адаптера, создаем рв")
+        Log.e("MyTag", "Loading data from ViewModel...")
+
 
         val recyclerView = binding.rvCharacters
         recyclerView.layoutManager = layoutManager
@@ -59,6 +60,7 @@ class CharactersListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.characters.collect { characterProfileList ->
+                    Log.e("MyTag", "New data received from ViewModel: $characterProfileList")
                     adapter.submitData(characterProfileList)
                     Log.e("MyTag", " adapter.submitData(characterProfileList)")
                     }
@@ -66,5 +68,7 @@ class CharactersListFragment : Fragment() {
         }
 
         viewModel.dispatch(IntentScreenCharacters.GetAllCharacters)
+        Log.e("MyTag", "Dispatching intent to get all characters...")
+
     }
 }

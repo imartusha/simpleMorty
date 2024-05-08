@@ -37,6 +37,9 @@
         <argument
             android:name="id"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_infoFragment_to_infoEpisodeFragment"
+            app:destination="@id/infoEpisodeFragment" />
     </fragment>
     <fragment
         android:id="@+id/infoEpisodeFragment"

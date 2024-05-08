@@ -5,18 +5,15 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.example.simplemorty.domain.models.Episode
 import com.example.simplemorty.domain.useCase.episode.GetAllEpisodesUseCase
-import com.example.simplemorty.domain.useCase.episode.GetInfoEpisodeByIdUseCase
+import com.example.simplemorty.domain.useCase.episode.GetEpisodeByIdUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
 
 class EpisodesViewModel(
-    private val getInfoEpisodeByIdUseCase: GetInfoEpisodeByIdUseCase,
     private val getAllEpisodes: GetAllEpisodesUseCase
 ) : ViewModel() {
 
@@ -25,21 +22,9 @@ class EpisodesViewModel(
 
     fun dispatch(intentScreenEpisodes: IntentScreenEpisodes) {
         when (intentScreenEpisodes) {
-//            is IntentScreenEpisodes.GetEpisode -> getEpisode(intentScreenEpisodes.id)
             is IntentScreenEpisodes.GetAllEpisodes -> fetchEpisodes()
-            else -> Unit
         }
     }
-
-    private fun clickOnCharacter(episode: Episode): Int {
-        return episode.id
-    }
-//    private fun getEpisode(id: Int) {
-//        viewModelScope.launch {
-//            val episode = getInfoEpisodeByIdUseCase.getInfoEpisode(id = id)
-//            _episodeLiveData.postValue(episode)
-//        }
-//    }
 
     private fun fetchEpisodes() {
         viewModelScope.launch {
@@ -53,6 +38,5 @@ class EpisodesViewModel(
 
 sealed interface IntentScreenEpisodes {
 
-    data class GetEpisode(val id: Int) : IntentScreenEpisodes
     data object GetAllEpisodes : IntentScreenEpisodes
 }

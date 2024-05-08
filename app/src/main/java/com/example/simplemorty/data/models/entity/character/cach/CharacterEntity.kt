@@ -102,7 +102,7 @@ fun CharacterProfile.toCachedCharacterEntity(): CharacterEntity {
 fun CharacterEntity.toCharacterProfile(): CharacterProfile {
     return CharacterProfile(
         created = created,
-        episode = episode,
+        episode = requireNotNull(episode),
         gender = gender,
         id = id,
         image = image,

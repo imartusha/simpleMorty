@@ -33,7 +33,7 @@ internal class CharactersRepositoryImpl(
 
 ) : CharactersRepository {
 
-    private val cacheDao = dataBase.cacheDao
+    private val cacheDao = dataBase.cacheCharacterDao
     private val favoriteDao = dataBase.favoriteDao
 
     @OptIn(ExperimentalPagingApi::class)
@@ -62,7 +62,7 @@ internal class CharactersRepositoryImpl(
         }.flowOn(Dispatchers.IO)
 
     override suspend fun getCharacterByIdFromDB(id: Int): CharacterProfile? {
-        return dataBase.cacheDao.getCharacterById(id = id)?.toCharacterProfile()
+        return dataBase.cacheCharacterDao.getCharacterById(id = id)?.toCharacterProfile()
     }
 
     override suspend fun getMultipleCharacters(characterIdsList: String): List<CharacterProfile> {

@@ -23,9 +23,12 @@ class InfoEpisodeFragment : Fragment() {
     private val binding get() = fragmentInfoEpisodeBinding
 
     private val args: InfoEpisodeFragmentArgs by navArgs()
-    private lateinit var adapter: CharactersListAdapter
+
     private val viewModel: InfoEpisodeViewModel by viewModel<InfoEpisodeViewModel>()
+
+    private lateinit var adapter: CharactersListAdapter
     private lateinit var layoutManager: LinearLayoutManager
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,26 +56,18 @@ class InfoEpisodeFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
 
-
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                viewModel._characterFromLocationStateFlow.collect { characterProfileList ->
-//                    adapter.submitData(characterProfileList)
-//                }
-//            }
-//        }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel._episodeByIdStateFlow
                     .collect { episode ->
-                        binding.episodesName.text = episode?.name
-                        binding.episodeEpisode.text = episode?.episode
-                        binding.episodeAirDate.text = episode?.airDate
-                        binding.episodeCreated.text = episode?.created?.formatDateString()
+                        with(binding) {
+                            episodesName.text = episode?.name
+                            episodeEpisode.text = episode?.episode
+                            episodeAirDate.text = episode?.airDate
+                            episodeCreated.text = episode?.created?.formatDateString()
+                        }
                     }
             }
-
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -82,6 +77,5 @@ class InfoEpisodeFragment : Fragment() {
                 }
             }
         }
-
     }
 }

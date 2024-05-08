@@ -20,7 +20,7 @@ internal class CharacterRemoteMediator(
 ) : RemoteMediator<Int, CharacterEntity>() {
 
     private val remoteKeysDao = database.remoteKeysDao
-    private val cacheDao = database.cacheDao
+    private val cacheDao = database.cacheCharacterDao
 
     override suspend fun load(
         loadType: LoadType,
@@ -55,7 +55,7 @@ internal class CharacterRemoteMediator(
             database.withTransaction {
                 if (loadType== LoadType.REFRESH){
                     database.remoteKeysDao.clearRemoteKeys()
-                    database.cacheDao.clearCharacters()
+                    database.cacheCharacterDao.clearCharacters()
                 }
             }
             val prevKey = if (page == STARTING_PAGE_INDEX) null else page.minus(1)

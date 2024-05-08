@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.example.simplemorty.data.models.entity.episode.mapToEpisodeResponse
 import com.example.simplemorty.data.network.api.episode.EpisodeApi
 import com.example.simplemorty.domain.models.Episode
 
@@ -17,7 +18,7 @@ internal class EpisodePagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Episode> {
         val pageNumber = params.key ?: STARTING_PAGE_INDEX
         return try {
-            val response = episodeApi.getEpisodes(pageNumber)
+            val response = mapToEpisodeResponse(episodeApi.getEpisodes(pageNumber))
 
             var nextPageNumber: Int? = null
             Log.e("MyTag", "респонзе в пейджингсорс $response")

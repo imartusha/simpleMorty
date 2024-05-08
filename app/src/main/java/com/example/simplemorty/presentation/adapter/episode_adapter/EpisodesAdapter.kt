@@ -1,28 +1,24 @@
-package com.example.simplemorty.presentation.adapter
+package com.example.simplemorty.presentation.adapter.episode_adapter
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplemorty.databinding.ItemEpisodeBinding
-import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Episode
-import com.example.simplemorty.presentation.adapter.character_adapter.CharactersAdapter
 
 class EpisodesAdapter(
     private val onClick: (Episode) -> Unit
 ) : PagingDataAdapter<Episode, RecyclerView.ViewHolder>(EpisodeDiffUtil) {
 
-//    private lateinit var itemEpisodeBinding: ItemEpisodeBinding
+    //    private lateinit var itemEpisodeBinding: ItemEpisodeBinding
 //    private val binding get() = itemEpisodeBinding
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = getItem(position)
 
         when (holder) {
-            is EpisodesAdapter.EpisodeViewHolder -> {
+            is EpisodeViewHolder -> {
                 holder.bind(currentItem!!)
             }
         }
@@ -33,8 +29,9 @@ class EpisodesAdapter(
         val binding = ItemEpisodeBinding.inflate(inflater, parent, false)
         return EpisodeViewHolder(binding)
     }
-    inner class EpisodeViewHolder(private val binding: ItemEpisodeBinding, )
-        : RecyclerView.ViewHolder(binding.root) {
+
+    inner class EpisodeViewHolder(private val binding: ItemEpisodeBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(episodeList: Episode) {
             with(binding) {
@@ -46,7 +43,7 @@ class EpisodesAdapter(
                 textViewEpisodeName.text = episodeList.name
             }
             itemView.setOnClickListener {
-                onClick?.invoke(episodeList)
+                onClick.invoke(episodeList)
             }
         }
     }

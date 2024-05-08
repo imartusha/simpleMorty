@@ -6,6 +6,7 @@ import com.example.simplemorty.data.database.character.RemoteKeysDao
 import com.example.simplemorty.data.database.character.DataBase
 import com.example.simplemorty.data.database.character.FavoriteCharacterDao
 import com.example.simplemorty.data.database.character.MY_DATA_BASE
+import com.example.simplemorty.data.database.episode.CachedEpisodeDao
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import com.example.simplemorty.data.network.api.character.CharacterApi
@@ -25,7 +26,8 @@ import com.example.simplemorty.domain.useCase.location.GetAllLocationsUseCase
 import com.example.simplemorty.domain.useCase.character.GetCharacterUseCase
 import com.example.simplemorty.domain.useCase.character.GetCharactersListForInfo
 import com.example.simplemorty.domain.useCase.character.IsCharacterInFavoritesUseCase
-import com.example.simplemorty.domain.useCase.episode.GetInfoEpisodeByIdUseCase
+import com.example.simplemorty.domain.useCase.episode.GetEpisodeByIdUseCase
+import com.example.simplemorty.domain.useCase.episode.GetEpisodesListForCharacterInfoUseCase
 import com.example.simplemorty.domain.useCase.location.GetInfoLocationByIdUseCase
 import com.example.simplemorty.presentation.screens.characters_list.CharactersViewModel
 import com.example.simplemorty.presentation.screens.episodes_list.EpisodesViewModel
@@ -66,7 +68,6 @@ val appModule = module {
     }
     viewModel<EpisodesViewModel> {
         EpisodesViewModel(
-            getInfoEpisodeByIdUseCase = get(),
             getAllEpisodes = get()
         )
     }
@@ -79,12 +80,13 @@ val appModule = module {
     viewModel<InfoCharacterViewModel> {
         InfoCharacterViewModel(
             getCharacterUseCase = get(),
-            isCharacterInFavoritesUseCase = get()
+            isCharacterInFavoritesUseCase = get(),
+            getEpisodesListForCharacterInfoUseCase = get()
         )
     }
     viewModel<InfoEpisodeViewModel> {
         InfoEpisodeViewModel(
-            getInfoEpisodeByIdUseCase = get(),
+            getEpisodeByIdUseCase = get(),
             getCharactersListForInfo = get()
         )
     }
@@ -145,7 +147,11 @@ val appModule = module {
 
     single<CachedCharacterDao> {
         get<DataBase>()
-            .cacheDao
+            .cacheCharacterDao
+    }
+    single < CachedEpisodeDao>{
+        get<DataBase>()
+            .cachedEpisodeDao
     }
 
     single<DataBase> {
@@ -221,13 +227,18 @@ val appModule = module {
             scope = get()
         )
     }
-    factory<GetInfoEpisodeByIdUseCase> {
-        GetInfoEpisodeByIdUseCase(
+    factory<GetEpisodeByIdUseCase> {
+        GetEpisodeByIdUseCase(
             episodesRepository = get()
         )
     }
     factory<GetAllEpisodesUseCase> {
         GetAllEpisodesUseCase(
+            episodesRepository = get()
+        )
+    }
+    factory <GetEpisodesListForCharacterInfoUseCase>{
+        GetEpisodesListForCharacterInfoUseCase(
             episodesRepository = get()
         )
     }

@@ -1,10 +1,9 @@
 package com.example.simplemorty.data.network.api.episode
 
-import androidx.paging.PagingData
+import com.example.simplemorty.data.models.dto.character.CharacterDTO
 import com.example.simplemorty.data.models.dto.episode.EpisodeDTO
-import com.example.simplemorty.data.models.response.EpisodeResponse
+import com.example.simplemorty.data.models.response.CommonResponse
 import com.example.simplemorty.domain.models.Episode
-import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -17,15 +16,20 @@ internal interface EpisodeApi {
     @GET("episode/")
     suspend fun getEpisodes(
         @Query("page") pageIndex: Int? = null
-    ): Response<EpisodeResponse>
+    ): Response<CommonResponse<EpisodeDTO>>
 
     @GET("episode/{id}")
     suspend fun getEpisodeById(
         @Path("id") id: Int
-    ): Response<Episode>
+    ): Response<EpisodeDTO>
 
     @GET("episode/{episodes}")
     suspend fun getCharacterEpisodes(
         @Path("episodes") episodes: String
-    ): Response<List<Episode>>
+    ): Response<List<EpisodeDTO>>
+
+    @GET("episode/{ids}")
+    suspend fun getMultipleEpisode(
+        @Path("ids") episodeIds: String
+    ): List<EpisodeDTO>
 }

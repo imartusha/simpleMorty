@@ -59,7 +59,8 @@ internal fun CharacterDTO.toCharacterProfile(): CharacterProfile {
         homeland = requireNotNull(homeland),
         location = requireNotNull(location),
         image = image,
-        isFavorite = isFavorite
+        isFavorite = isFavorite,
+        episode = requireNotNull(episode)
     )
 }
 
