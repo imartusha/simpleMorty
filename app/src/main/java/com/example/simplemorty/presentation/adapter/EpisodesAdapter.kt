@@ -10,24 +10,37 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.simplemorty.databinding.ItemEpisodeBinding
 import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Episode
+import com.example.simplemorty.presentation.adapter.character_adapter.CharactersAdapter
 
 class EpisodesAdapter(
-    private val episodeList: List<Episode>,
     private val onClick: (Episode) -> Unit
-) :
-    //RecyclerView.Adapter<EpisodesAdapter.EpisodeViewHolder>() {
-    PagingDataAdapter<Episode, EpisodesAdapter.EpisodeViewHolder>(EpisodeDiffUtil) {
+) : PagingDataAdapter<Episode, RecyclerView.ViewHolder>(EpisodeDiffUtil) {
 
-    private lateinit var itemEpisodeBinding: ItemEpisodeBinding
-    private val binding get() = itemEpisodeBinding
+//    private lateinit var itemEpisodeBinding: ItemEpisodeBinding
+//    private val binding get() = itemEpisodeBinding
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val currentItem = getItem(position)
 
-    inner class EpisodeViewHolder(
-        binding: ItemEpisodeBinding,
-        itemView: View
-    ) : RecyclerView.ViewHolder(binding.root) {
+        when (holder) {
+            is EpisodesAdapter.EpisodeViewHolder -> {
+                holder.bind(currentItem!!)
+            }
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EpisodeViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ItemEpisodeBinding.inflate(inflater, parent, false)
+        return EpisodeViewHolder(binding)
+    }
+    inner class EpisodeViewHolder(private val binding: ItemEpisodeBinding, )
+        : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(episodeList: Episode) {
             with(binding) {
+                root.setOnClickListener {
+                    onClick(episodeList)
+                }
                 textViewAirDate.text = episodeList.airDate
                 textViewEpisodeNumber.text = episodeList.episode
                 textViewEpisodeName.text = episodeList.name
@@ -36,41 +49,7 @@ class EpisodesAdapter(
                 onClick?.invoke(episodeList)
             }
         }
-        val textViewEpisodeName = binding.textViewEpisodeName
-        val textViewEpisodeNumber = binding.textViewEpisodeNumber
-        val textViewAirDate = binding.textViewAirDate
-
     }
-
-
-    override fun onCreateViewHolder(
-        parent: ViewGroup, viewType: Int
-    ): EpisodeViewHolder {
-        Log.e("Marta super", "second commit")
-        val inflater = LayoutInflater.from(parent.context)
-        itemEpisodeBinding = ItemEpisodeBinding.inflate(inflater, parent, false)
-        val view = binding.root
-        return EpisodeViewHolder(binding, view)
-    }
-
-    override fun onBindViewHolder(holder: EpisodeViewHolder, position: Int) {
-
-        val currentItem = getItem(position)
-        holder.bind(currentItem!!)
-//
-//        holder.textViewEpisodeName.text = episode.name
-//        holder.textViewAirDate.text = episode.airDate
-//        holder.textViewEpisodeNumber.text = episode.episode
-//
-//        holder.itemView.setOnClickListener{
-//            onClick(episode)
-//        }
-    }
-
-    override fun getItemCount(): Int {
-        return episodeList.size
-    }
-
 
     object EpisodeDiffUtil : DiffUtil.ItemCallback<Episode>() {
         override fun areItemsTheSame(oldItem: Episode, newItem: Episode) =

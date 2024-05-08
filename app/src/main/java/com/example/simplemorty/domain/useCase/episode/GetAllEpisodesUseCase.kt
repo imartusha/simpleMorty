@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 class GetAllEpisodesUseCase(
     val episodesRepository: EpisodesRepository
 ) {
-    suspend fun getAllEpisodes(): Flow<PagingData<Episode>> {
+    fun getAllEpisodes(): Flow<PagingData<Episode>> {
         return episodesRepository.getEpisodes()
     }
 

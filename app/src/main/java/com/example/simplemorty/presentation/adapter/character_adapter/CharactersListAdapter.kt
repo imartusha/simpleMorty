@@ -2,33 +2,28 @@ package com.example.simplemorty.presentation.adapter.character_adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.simplemorty.databinding.ItemCharacterBinding
 import com.example.simplemorty.domain.models.CharacterProfile
-import androidx.compose.ui.graphics.Color
 
-
-class CharactersAdapter(
+class CharactersListAdapter(
+    private var characters: List<CharacterProfile>,
     private val onClick: (CharacterProfile) -> Unit
-) : PagingDataAdapter<CharacterProfile, RecyclerView.ViewHolder>(CharacterDiffCallback()) {
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = getItem(position)
-
-        when (holder) {
-            is CharacterViewHolder -> {
-                holder.bind(currentItem!!)
-            }
-        }
-    }
+) : RecyclerView.Adapter<CharactersListAdapter.CharacterViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemCharacterBinding.inflate(inflater, parent, false)
         return CharacterViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: CharacterViewHolder, position: Int) {
+        holder.bind(characters[position])
+    }
+
+    override fun getItemCount(): Int {
+        return characters.size
     }
 
     inner class CharacterViewHolder(private val binding: ItemCharacterBinding) :
@@ -45,13 +40,10 @@ class CharactersAdapter(
                 when (character.status) {
                     "Alive" -> {
                         binding.status.setTextColor(android.graphics.Color.parseColor("#00FF00"))
-
                     }
-
                     "Dead" -> {
                         binding.status.setTextColor(android.graphics.Color.parseColor("#F00000"))
                     }
-
                     "unknown" -> {
                         binding.status.setTextColor(android.graphics.Color.parseColor("#000000"))
                     }
@@ -62,20 +54,9 @@ class CharactersAdapter(
             }
         }
     }
-
-    class CharacterDiffCallback : DiffUtil.ItemCallback<CharacterProfile>() {
-        override fun areItemsTheSame(
-            oldItem: CharacterProfile,
-            newItem: CharacterProfile
-        ): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(
-            oldItem: CharacterProfile,
-            newItem: CharacterProfile
-        ): Boolean {
-            return oldItem == newItem
-        }
+    fun updateCharactersList(newCharacters: List<CharacterProfile>) {
+        characters = newCharacters
+        notifyDataSetChanged()
     }
 }
+

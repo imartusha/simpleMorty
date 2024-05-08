@@ -4,9 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import com.example.simplemorty.domain.models.Location
 import com.example.simplemorty.domain.useCase.location.GetAllLocationsUseCase
 import com.example.simplemorty.domain.useCase.location.GetInfoLocationByIdUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
 
@@ -14,6 +20,9 @@ class LocationsViewModel (
     private val getInfoLocationByIdUseCase: GetInfoLocationByIdUseCase,
     private val getAllLocationsUseCase: GetAllLocationsUseCase
 ) : ViewModel() {
+
+    private val locationStateFlow: MutableSharedFlow<PagingData<Location>> = MutableSharedFlow()
+    val _locationStateFlow: SharedFlow<PagingData<Location>> = locationStateFlow
 
     private val _locationLiveData = MutableLiveData<Location>()
     val locationLiveData: LiveData<Location> = _locationLiveData
@@ -23,22 +32,24 @@ class LocationsViewModel (
 
     fun dispatch(intentScreenLocations: IntentScreenLocations) {
         when (intentScreenLocations) {
-            is IntentScreenLocations.GetLocation -> getLocation(intentScreenLocations.id)
+         //   is IntentScreenLocations.GetLocation -> getLocation(intentScreenLocations.id)
             is IntentScreenLocations.GetAllLocations -> getAllLocations()
+            is IntentScreenLocations.GetLocation -> TODO()
         }
     }
 
-    private fun getLocation(id: Int) {
-        viewModelScope.launch {
-            val episode = getInfoLocationByIdUseCase.getInfoCLocation(id = id)
-            _locationLiveData.postValue(episode)
-        }
-    }
+//    private fun getLocation(id: Int) {
+//        viewModelScope.launch {
+//            val episode = getInfoLocationByIdUseCase.getInfoCLocation(id = id)
+//            _locationLiveData.postValue(episode)
+//        }
+//    }
 
     private fun getAllLocations() {
         viewModelScope.launch {
-            val episodesList = getAllLocationsUseCase.getAllLocations()
-            _locationsListLiveData.postValue(episodesList)
+            getAllLocationsUseCase.getAllLocations().flowOn(Dispatchers.IO).collectLatest {
+                locationStateFlow.emit(it)
+            }
         }
     }
 }

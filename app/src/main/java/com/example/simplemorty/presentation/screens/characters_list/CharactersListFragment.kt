@@ -1,6 +1,7 @@
 package com.example.simplemorty.presentation.screens.characters_list
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,21 +43,24 @@ class CharactersListFragment : Fragment() {
         navController = findNavController()
 
         layoutManager = LinearLayoutManager(activity)
-
+        Log.e("MyTag", "до создлания адаптера")
         adapter = CharactersAdapter() { characterProfile ->
             val action = CharactersListFragmentDirections
-                .actionCharactersListFragmentToInfoFragment(characterProfile.id)
+                .actionCharactersListFragmentToInfoFragment(characterProfile.id!!)
             findNavController().navigate(action)
         }
+        Log.e("MyTag", "после создлания адаптера, создаем рв")
 
         val recyclerView = binding.rvCharacters
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
+        Log.e("MyTag", "после  рв")
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.characters.collect { characterProfileList ->
                     adapter.submitData(characterProfileList)
+                    Log.e("MyTag", " adapter.submitData(characterProfileList)")
                     }
             }
         }

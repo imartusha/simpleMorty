@@ -1,8 +1,9 @@
 package com.example.simplemorty.data.network.api.character
 
 import com.example.simplemorty.data.models.dto.character.CharacterDTO
-import com.example.simplemorty.data.models.dto.character.CharactersResponse
-import com.example.simplemorty.data.models.response.CommonResponse
+import com.example.simplemorty.data.models.response.CharactersResponse
+import com.example.simplemorty.domain.models.CharacterProfile
+import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -19,7 +20,7 @@ internal interface CharacterApi {
     @GET("character/{id}")
     suspend fun getCharacterById(
         @Path("id") id: Int
-    ): Response<CharacterDTO>
+    ): Response<CharacterProfile>
 
     @GET("character/")
     suspend fun getSearch(
@@ -32,8 +33,14 @@ internal interface CharacterApi {
         @Query("name") name: String,
     ): Response<CharactersResponse>
 
-    @GET("character/{list}")
-    suspend fun getMoreCharactersThanOne(
-        @Path("list") characterList: List<String>
-    ): Response<List<CharacterDTO>>
+    //    @GET("characters")
+//    suspend fun getMultipleCharacters(
+//        @Query("ids") characterIdsList: List<String>
+//    ): List<CharacterProfile>
+    @GET("character/{ids}")
+    suspend fun getMultipleCharacters(
+        @Path("ids") characterIds: String
+    ): List<CharacterProfile>
+
+
 }

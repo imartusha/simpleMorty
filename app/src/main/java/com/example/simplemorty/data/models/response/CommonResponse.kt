@@ -1,7 +1,10 @@
 package com.example.simplemorty.data.models.response
 
+import com.example.simplemorty.data.models.dto.info.InfoDTO
 import com.example.simplemorty.domain.models.CharacterProfile
+import com.example.simplemorty.domain.models.Episode
 import com.example.simplemorty.domain.models.Info
+import com.example.simplemorty.domain.models.Location
 import com.google.gson.annotations.SerializedName
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -23,4 +26,16 @@ data class CharactersResponse(
     @SerializedName("results")
     val results: List<CharacterProfile>? = emptyList()
 )
+data class EpisodeResponse(
+    @SerializedName("info")
+    val info: Info? ,
+    @SerializedName("results")
+    val results: List<Episode>? = emptyList()
+)
 
+data class LocationResponse(
+    @SerializedName("info")
+    val infoDTO: InfoDTO? = InfoDTO(),
+    @SerializedName("results")
+    val results: List<Location>? = emptyList()
+)

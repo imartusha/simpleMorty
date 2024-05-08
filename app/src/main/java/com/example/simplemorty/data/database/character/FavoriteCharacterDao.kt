@@ -17,13 +17,13 @@ interface FavoriteCharacterDao {
     fun getAllFavoriteCharacters(): Flow<List<FavoriteEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addFavoriteCharacter(character: FavoriteEntity?)
+    suspend fun addFavoriteCharacter(character: FavoriteEntity)
 
     @Delete
-    suspend fun deleteFavoriteCharacter(character: FavoriteEntity?)
+    suspend fun deleteFavoriteCharacter(character: FavoriteEntity)
 
     @Update
-    suspend fun updateCharacter(character: FavoriteEntity?)
+    suspend fun updateCharacter(character: FavoriteEntity)
 
     @Query("UPDATE favorite_entity SET isFavorite=:isFavorite WHERE id=:id")
     suspend fun updateFavoriteState(id: Int, isFavorite: Boolean)

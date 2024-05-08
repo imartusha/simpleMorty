@@ -2,18 +2,12 @@ package com.example.simplemorty.data.models.dto.episode
 
 import android.os.Parcelable
 import com.example.simplemorty.data.models.entity.episode.EpisodeEntity
-import com.example.simplemorty.data.models.response.Result
 import com.example.simplemorty.domain.models.Episode
 import com.example.simplemorty.domain.models.Info
 import kotlinx.parcelize.Parcelize
 import com.google.gson.annotations.SerializedName
 
-data class EpisodeResponse(
-    @SerializedName("info")
-    val info: Info? ,
-    @SerializedName("results")
-    val results: List<EpisodeDTO>? = emptyList()
-)
+
 class EpisodeDTO(
 
     @SerializedName("air_date")
@@ -25,29 +19,29 @@ class EpisodeDTO(
     val id: Int,
     val name: String,
     val url: String
-) : Result
+)
 
-internal fun mapDtoToEpisode(episodeDTO: EpisodeDTO): Episode {
+internal fun EpisodeDTO.toEpisode(): Episode {
     return Episode(
-        airDate = episodeDTO.airDate,
-        characters = episodeDTO.characters,
-        created = episodeDTO.created,
-        episode = episodeDTO.episode,
-        id = episodeDTO.id,
-        name = episodeDTO.name,
-        url = episodeDTO.url
+        airDate = airDate,
+        characters = characters,
+        created = created,
+        episode = episode,
+        id = id,
+        name = name,
+        url = url
     )
 }
 
-internal fun mapDtoToEpisodeEntity(episodeDTO: EpisodeDTO): EpisodeEntity {
+internal fun EpisodeDTO.toEpisodeEntity(): EpisodeEntity {
     return EpisodeEntity(
-        airDate = episodeDTO.airDate,
-        characters = episodeDTO.characters,
-        created = episodeDTO.created,
-        episode = episodeDTO.episode,
-        id = episodeDTO.id,
-        name = episodeDTO.name,
-        url = episodeDTO.url
+        airDate = airDate,
+        characters = characters,
+        created = created,
+        episode = episode,
+        id = id,
+        name = name,
+        url = url
     )
 }
 
@@ -65,12 +59,12 @@ internal fun mapEpisodeToDTO(episode: Episode): EpisodeDTO {
 
 fun mapDtoToEntityEpisodeList(episodesDto: List<EpisodeDTO>): List<EpisodeEntity> {
     return episodesDto.map { episodeDto ->
-        mapDtoToEpisodeEntity(episodeDto)
+        episodeDto.toEpisodeEntity()
     }
 }
 
 fun mapDtoToEpisodeList(episodes: List<EpisodeDTO>): List<Episode> {
-    return episodes.map { episode ->
-        mapDtoToEpisode(episode)
+    return episodes.map { episodeDTO ->
+        episodeDTO.toEpisode()
     }
 }

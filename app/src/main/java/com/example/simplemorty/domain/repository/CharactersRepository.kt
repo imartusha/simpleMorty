@@ -13,16 +13,16 @@ import kotlinx.coroutines.flow.Flow
 interface CharactersRepository {
 
     //network
-    suspend fun getCharacterById(id: Int): Flow<ApiResponse<CharacterProfile?>>
+     fun getCharacterById(id: Int): Flow<ApiResponse<CharacterProfile?>>
     suspend fun getCharacters(): Flow<PagingData<CachedCharacterEntity>>
-    suspend fun getCharacterEpisodes(episodeList: String): Flow<ApiResponse<List<Episode>?>>
+    //  suspend fun getCharacterEpisodes(episodeList: String): Flow<ApiResponse<List<Episode>?>>
 
-    suspend fun getMoreCharactersThanOne(
-        characterList: List<String>
-    ): Flow<ApiResponse<List<CharacterProfile>?>>
+    suspend fun getMultipleCharacters(characterIdsList: String): List<CharacterProfile>
+    //: Flow<ApiResponse<List<CharacterProfile>?>>
+
 
     //room db
-    suspend fun getAllCharactersFromLocalDb(): List<CharacterProfile>
+    //  suspend fun getAllCharactersFromLocalDb(): List<CharacterProfile>
     fun getSearch(
         text: String,
         status: String
@@ -31,6 +31,7 @@ interface CharactersRepository {
     fun getSearchAll(
         text: String
     ): Flow<ApiResponse<CharactersResponse?>>
+
     fun getAllFavoriteCharacters(): Flow<List<FavoriteEntity>>
     suspend fun addCharacterToFavoriteList(character: FavoriteEntity)
 
@@ -38,7 +39,7 @@ interface CharactersRepository {
 
     suspend fun updateFavoriteState(id: Int, isFavorite: Boolean)
 
-    suspend fun updateCharacter(character: FavoriteEntity?)
+    suspend fun updateCharacter(character: FavoriteEntity)
 
     suspend fun isCharacterInFavorites(id: Int): Boolean
 
@@ -46,17 +47,11 @@ interface CharactersRepository {
 }
 
 interface EpisodesRepository {
-    fun getEpisodeById(id: Int): Flow<ApiResponse<Episode?>>
-
-    //  suspend fun getAllEpisodes(): List<Episode>
     fun getEpisodes(): Flow<PagingData<Episode>>
-
-    //   suspend fun getCharactersFromEpisode():Flow<PagingData<CachedCharacterEntity>>
-
-
+    fun getEpisodesById(id: Int): Flow<ApiResponse<Episode?>>
 }
 
 interface LocationsRepository {
-    suspend fun getLocationById(id: Int): Flow<ApiResponse<Location?>>
-    suspend fun getLocations(): Flow<PagingData<Location>>
+    fun getLocationById(id: Int): Flow<ApiResponse<Location?>>
+    fun getLocations(): Flow<PagingData<Location>>
 }

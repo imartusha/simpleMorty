@@ -42,7 +42,7 @@ class InfoCharacterFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.state
+                viewModel._detailStateFlow
                     .collect { characterProfile ->
                         binding.textViewCharacterName.text = characterProfile?.name
                         binding.textViewGender.text = characterProfile?.gender

@@ -4,6 +4,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.example.simplemorty.data.models.entity.character.Converters
+import com.example.simplemorty.data.models.entity.character.cach.CachedCharacterEntity
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
@@ -74,3 +75,20 @@ object Converters {
     }
 }
 
+fun CharacterProfile.toCachedCharacterEntity(): CachedCharacterEntity {
+    return CachedCharacterEntity(
+        created = created,
+        episode = episode,
+        gender = gender,
+        id = id,
+        image = image,
+        location = location,
+        name = name,
+        homeland =homeland,
+        species = species,
+        status = status,
+        type = type,
+        url = url,
+        isFavorite = isFavorite
+    )
+}

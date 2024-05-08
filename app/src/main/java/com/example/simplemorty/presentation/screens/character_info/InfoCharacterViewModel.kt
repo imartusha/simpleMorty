@@ -1,25 +1,43 @@
 package com.example.simplemorty.presentation.screens.character_info
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import com.example.simplemorty.data.models.response.ApiResponse
 import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Homeland
 import com.example.simplemorty.domain.models.Location
 import com.example.simplemorty.domain.useCase.character.GetCharacterUseCase
+import com.example.simplemorty.domain.useCase.character.IsCharacterInFavoritesUseCase
 import com.example.simplemorty.utils.formatDateString
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class InfoCharacterViewModel(
-    private val getCharacterUseCase: GetCharacterUseCase
+    private val getCharacterUseCase: GetCharacterUseCase,
+    private val isCharacterInFavoritesUseCase: IsCharacterInFavoritesUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ScreenStateCharacter())
-    val state: StateFlow<ScreenStateCharacter> = _state
+
+    private val detailStateFlow: MutableSharedFlow<CharacterProfile?> =
+        MutableSharedFlow()
+    val _detailStateFlow: SharedFlow<CharacterProfile?> = detailStateFlow
+
+    private val progressStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val _progressStateFlow: StateFlow<Boolean> = progressStateFlow
+
+    private val toastMessageObserver: MutableLiveData<String> = MutableLiveData()
+
+//    private val _state = MutableStateFlow(ScreenStateCharacter())
+//    val state: StateFlow<ScreenStateCharacter> = _state
 
     fun dispatch(intentScreenInfoCharacter: IntentScreenInfoCharacter) {
         when (intentScreenInfoCharacter) {
@@ -28,14 +46,46 @@ class InfoCharacterViewModel(
         }
     }
 
-    private fun getCharacterById(id: Int) {
-        viewModelScope.launch {
-            val characterProfile = getCharacterUseCase.getCharacterById(id = id)
-            _state.update { state ->
-                updateCharacterInfo(state, characterProfile)
+
+//    private fun getCharacterById(id: Int) {
+//        viewModelScope.launch {
+//            val characterProfile = getCharacterUseCase.getCharacterById(id = id)
+//            _state.update { state ->
+//                updateCharacterInfo(state, characterProfile)
+//            }
+//        }
+//    }
+    fun getCharacterById(id: Int) {
+    viewModelScope.launch {
+        getCharacterUseCase.getCharacterById(id).collectLatest {
+            when (it) {
+                is ApiResponse.Progress -> {
+                    progressStateFlow.value = true
+                }
+                is ApiResponse.Success -> {
+                    val character = it.data
+                    val isFavorite =  character?.let { id -> isCharacterInFavoritesUseCase.isCharacterInFavorites(id.id!!) }
+                    character?.isFavorite = isFavorite!!
+                    detailStateFlow.emit(character)
+                    progressStateFlow.value = false
+                }
+                is ApiResponse.Failure -> {
+                    try {
+                        val errorResponse = Gson().fromJson(
+                            it.data!!.errorBody()!!.string(),
+                            CharacterProfile::class.java
+                        )
+                        detailStateFlow.emit(errorResponse)
+                    } catch (e: Exception) {
+                        toastMessageObserver.setValue("Connection failed.")
+                    }
+                    progressStateFlow.value = false
+                }
             }
         }
     }
+}
+
 
     private fun updateCharacterInfo(
         state: ScreenStateCharacter,
@@ -48,7 +98,7 @@ class InfoCharacterViewModel(
             status = characterProfile.status,
             type = characterProfile.type,
             image = characterProfile.image,
-            created = characterProfile.created.formatDateString(),
+            created = characterProfile.created?.formatDateString(),
             homeland = characterProfile.homeland,
             episode = characterProfile.episode,
             location = characterProfile.location

@@ -1,6 +1,7 @@
 package com.example.simplemorty.data.models.dto.character
 
 import androidx.room.PrimaryKey
+import com.example.simplemorty.data.models.dto.info.InfoDTO
 import com.example.simplemorty.data.models.entity.character.CharacterEntity
 import com.example.simplemorty.data.models.entity.character.toCharacterEntity
 import com.example.simplemorty.data.models.entity.character.toCharacterProfile
@@ -10,12 +11,7 @@ import com.example.simplemorty.domain.models.Homeland
 import com.example.simplemorty.domain.models.Info
 import com.google.gson.annotations.SerializedName
 
-data class CharactersResponse(
-    @SerializedName("info")
-    val info: Info?,
-    @SerializedName("results")
-    val results: List<CharacterDTO>? = emptyList()
-)
+
 
 class CharacterDTO(
     @PrimaryKey @field:SerializedName("id")

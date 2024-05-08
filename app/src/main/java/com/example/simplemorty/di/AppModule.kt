@@ -1,8 +1,7 @@
 package com.example.simplemorty.di
 
 import androidx.room.Room
-import com.example.simplemorty.data.database.character.cach.CachedCharacterDao
-import com.example.simplemorty.data.database.character.CharacterDao
+import com.example.simplemorty.data.database.character.CachedCharacterDao
 import com.example.simplemorty.data.database.character.RemoteKeysDao
 import com.example.simplemorty.data.database.character.DataBase
 import com.example.simplemorty.data.database.character.FavoriteCharacterDao
@@ -14,7 +13,7 @@ import com.example.simplemorty.data.network.api.episode.EpisodeApi
 import com.example.simplemorty.data.network.api.location.LocationApi
 import com.example.simplemorty.data.repository.EpisodesRepositoryImpl
 import com.example.simplemorty.data.repository.character.CharactersRepositoryImpl
-import com.example.simplemorty.data.repository.LocationsRepositoryImpl
+import com.example.simplemorty.data.repository.location.LocationsRepositoryImpl
 import com.example.simplemorty.data.repository.character.CharacterPagingSource
 import com.example.simplemorty.data.repository.character.CharacterRemoteMediator
 import com.example.simplemorty.domain.repository.CharactersRepository
@@ -25,6 +24,7 @@ import com.example.simplemorty.domain.useCase.episode.GetAllEpisodesUseCase
 import com.example.simplemorty.domain.useCase.location.GetAllLocationsUseCase
 import com.example.simplemorty.domain.useCase.character.GetCharacterUseCase
 import com.example.simplemorty.domain.useCase.character.GetCharactersListForInfo
+import com.example.simplemorty.domain.useCase.character.IsCharacterInFavoritesUseCase
 import com.example.simplemorty.domain.useCase.episode.GetInfoEpisodeByIdUseCase
 import com.example.simplemorty.domain.useCase.location.GetInfoLocationByIdUseCase
 import com.example.simplemorty.presentation.screens.characters_list.CharactersViewModel
@@ -32,6 +32,9 @@ import com.example.simplemorty.presentation.screens.episodes_list.EpisodesViewMo
 import com.example.simplemorty.presentation.screens.character_info.InfoCharacterViewModel
 import com.example.simplemorty.presentation.screens.episode_info.InfoEpisodeViewModel
 import com.example.simplemorty.presentation.screens.locations_list.LocationsViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import okhttp3.Cache
 import okhttp3.Protocol
 import org.koin.android.ext.koin.androidContext
@@ -75,7 +78,8 @@ val appModule = module {
     }
     viewModel<InfoCharacterViewModel> {
         InfoCharacterViewModel(
-            getCharacterUseCase = get()
+            getCharacterUseCase = get(),
+            isCharacterInFavoritesUseCase = get()
         )
     }
     viewModel<InfoEpisodeViewModel> {
@@ -84,6 +88,10 @@ val appModule = module {
             getCharactersListForInfo = get()
         )
     }
+    single<CoroutineScope> {
+        CoroutineScope(SupervisorJob() + Dispatchers.IO) // Пример области корутин с использованием диспетчера Dispatchers.IO и SupervisorJob
+    }
+
     single {
         provideCache(androidContext().cacheDir)
     }
@@ -158,8 +166,8 @@ val appModule = module {
     single<CharactersRepository> {
         CharactersRepositoryImpl(
             characterApi = get(),
-            characterDao = get(),
-            dataBase = get()
+            dataBase = get(),
+            scope = get()
         )
     }
     single<CharacterRemoteMediator> {
@@ -170,6 +178,11 @@ val appModule = module {
     }
     factory<GetCharacterUseCase> {
         GetCharacterUseCase(
+            charactersRepository = get()
+        )
+    }
+    factory<IsCharacterInFavoritesUseCase> {
+        IsCharacterInFavoritesUseCase(
             charactersRepository = get()
         )
     }
@@ -186,7 +199,8 @@ val appModule = module {
     //Locations
     single<LocationsRepository> {
         LocationsRepositoryImpl(
-            locationApi = get()
+            locationApi = get(),
+            scope = get()
         )
     }
     factory<GetInfoLocationByIdUseCase> {
@@ -203,7 +217,8 @@ val appModule = module {
     single<EpisodesRepository> {
         EpisodesRepositoryImpl(
             episodeApi = get(),
-            dataBase = get()
+            dataBase = get(),
+            scope = get()
         )
     }
     factory<GetInfoEpisodeByIdUseCase> {

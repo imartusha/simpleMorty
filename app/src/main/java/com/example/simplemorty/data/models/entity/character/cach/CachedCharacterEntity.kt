@@ -96,6 +96,23 @@ fun CharacterDTO.toCachedCharacterEntity(): CachedCharacterEntity {
         isFavorite = isFavorite
     )
 }
+fun CharacterProfile.toCachedCharacterEntity(): CachedCharacterEntity {
+    return CachedCharacterEntity(
+        created = created,
+        episode = episode,
+        gender = gender,
+        id = id,
+        image = image,
+        location = location,
+        name = name,
+        homeland =homeland,
+        species = species,
+        status = status,
+        type = type,
+        url = url,
+        isFavorite = isFavorite
+    )
+}
 fun CachedCharacterEntity.toCharacterProfile(): CharacterProfile {
     return CharacterProfile(
         created = created,
@@ -114,8 +131,13 @@ fun CachedCharacterEntity.toCharacterProfile(): CharacterProfile {
     )
 }
 
-fun mapToCachedCharacterEntity(characters: List<CharacterDTO>): List<CachedCharacterEntity> {
-    return characters.map { characterDTO ->
-        characterDTO.toCachedCharacterEntity()
+//fun mapToCachedCharacterEntity(characters: List<CharacterDTO>): List<CachedCharacterEntity> {
+//    return characters.map { characterDTO ->
+//        characterDTO.toCachedCharacterEntity()
+//    }
+//}
+fun mapToCachedCharacterEntity(characters: List<CharacterProfile>): List<CachedCharacterEntity> {
+    return characters.map { characterProfile ->
+        characterProfile.toCachedCharacterEntity()
     }
 }

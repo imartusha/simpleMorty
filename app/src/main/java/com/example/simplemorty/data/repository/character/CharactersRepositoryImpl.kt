@@ -5,46 +5,38 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import coil.util.CoilUtils.result
 import com.example.simplemorty.data.database.character.CharacterDao
 import com.example.simplemorty.data.database.character.DataBase
-import com.example.simplemorty.data.models.dto.character.mapDTOsToCharacterProfiles
-import com.example.simplemorty.data.models.dto.character.mapDtoToCharacterProfile
-import com.example.simplemorty.data.models.dto.character.mapEntitiesToCharacterProfiles
-import com.example.simplemorty.data.models.dto.character.mapDtoToCharacterEntity
+
+import com.example.simplemorty.data.models.entity.character.FavoriteEntity
 import com.example.simplemorty.data.models.entity.character.cach.CachedCharacterEntity
-import com.example.simplemorty.data.models.entity.character.mapEntityToCharacterProfile
+import com.example.simplemorty.data.models.response.ApiResponse
+import com.example.simplemorty.data.models.response.CharactersResponse
 import com.example.simplemorty.data.network.api.character.CharacterApi
 import com.example.simplemorty.domain.models.CharacterProfile
+import com.example.simplemorty.domain.models.Episode
 import com.example.simplemorty.domain.repository.CharactersRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
+import com.example.simplemorty.utils.result
 
 
 internal class CharactersRepositoryImpl(
     private val characterApi: CharacterApi,
-    private val characterDao: CharacterDao,
-    private val dataBase: DataBase
+    private val dataBase: DataBase,
+    private val scope: CoroutineScope
 
 ) : CharactersRepository {
 
-    override suspend fun getCharacterById(id: Int): CharacterProfile {
-        val characterFromLocalDb = characterDao.getCharacterByIdFromDB(id = id)?.let {
-            mapEntityToCharacterProfile(it)
-        }
-        return if (characterFromLocalDb != null) {
-            characterFromLocalDb
-        } else {
-            val characterDto = characterApi.getCharacterByIdFromApi(id)
-            val characterProfile = mapDtoToCharacterProfile(characterDto)
-            val characterEntity = mapDtoToCharacterEntity(characterDto)
-
-            characterDao.insertCharacter(characterEntity)
-
-            characterProfile
-        }
-    }
 
     private val cacheDao = dataBase.cacheDao
+    private val favoriteDao = dataBase.favoriteDao
 
     @OptIn(ExperimentalPagingApi::class)
     override suspend fun getCharacters(): Flow<PagingData<CachedCharacterEntity>> {
@@ -59,36 +51,95 @@ internal class CharactersRepositoryImpl(
                 cacheDao.getCharacters()
             }
         ).flow
+            .cachedIn(scope)
     }
 
-    override suspend fun getMultipleCharacters(characters: List<String>): Flow<PagingData<CharacterProfile>> {
-        val charactersDTOList =
-            characterApi.getMultipleCharactersFromApi(getIdesCharactersList(characters))
-        val profiles = mapDTOsToCharacterProfiles(characters = charactersDTOList)
-        val pagingData: PagingData<CharacterProfile> = PagingData.from(profiles)
-        return flowOf(pagingData)
+    override fun getFavoriteCharacters(): Flow<List<FavoriteEntity>> {
+        return favoriteDao.getAllFavoriteCharacters()
     }
 
+    override fun getCharacterById(id: Int): Flow<ApiResponse<CharacterProfile?>> =
+        result {
+            characterApi.getCharacterById(id = id)
+        }.flowOn(Dispatchers.IO)
 
-//    override suspend fun getMultipleCharacters(characters: List<String>): List<CharacterProfile> {
+
+    //    override suspend fun getCharacterEpisodes(episodeList: String): Flow<ApiResponse<List<Episode>?>> =
+//        result {
+//            characterApi.getCharacterEpisodes(episodeList)
+//        }.flowOn(Dispatchers.IO)
+
+//    override fun getMultipleCharacters(characterIdsList: List<String>): Flow<ApiResponse<List<CharacterProfile>?>> =
+//        result {
+//            characterApi.getMultipleCharacters(characterIdsList = characterIdsList)
+//        }.flowOn(Dispatchers.IO)
+override suspend fun getMultipleCharacters(characterIdsList: String): List<CharacterProfile> {
+    return characterApi.getMultipleCharacters(characterIdsList)
+}
+
+
+
+    override fun getSearch(text: String, status: String): Flow<ApiResponse<CharactersResponse?>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getSearchAll(text: String): Flow<ApiResponse<CharactersResponse?>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAllFavoriteCharacters(): Flow<List<FavoriteEntity>> {
+        return favoriteDao.getAllFavoriteCharacters()
+    }
+
+    override suspend fun addCharacterToFavoriteList(character: FavoriteEntity) {
+        character.isFavorite = true
+        favoriteDao.addFavoriteCharacter(character)
+        favoriteDao.updateCharacter(character)
+        favoriteDao.updateFavoriteState(character.id!!, true)
+    }
+
+    override suspend fun deleteCharacterFromMyFavoriteList(character: FavoriteEntity) {
+        character.isFavorite = false
+        favoriteDao.deleteFavoriteCharacter(character)
+        favoriteDao.updateCharacter(character)
+        favoriteDao.updateFavoriteState(character.id!!, false)
+    }
+
+    override suspend fun updateFavoriteState(id: Int, isFavorite: Boolean) {
+        favoriteDao.updateFavoriteState(id, isFavorite)
+    }
+
+    override suspend fun updateCharacter(character: FavoriteEntity) {
+        favoriteDao.updateCharacter(character)
+    }
+
+    override suspend fun isCharacterInFavorites(id: Int): Boolean =
+        withContext(Dispatchers.IO) {
+            favoriteDao.isCharacterInFavorites(id)
+        }
+
+
+//    override suspend fun getMultipleCharacters(characters: List<String>): Flow<PagingData<CharacterProfile>> {
 //        val charactersDTOList =
 //            characterApi.getMultipleCharactersFromApi(getIdesCharactersList(characters))
-//        return mapCharacterDTOsToProfiles(characters = charactersDTOList)
+//        val profiles = mapDTOsToCharacterProfiles(characters = charactersDTOList)
+//        val pagingData: PagingData<CharacterProfile> = PagingData.from(profiles)
+//        return flowOf(pagingData)
 //    }
-
-    override suspend fun getAllCharactersFromLocalDb(): List<CharacterProfile> {
-        return mapEntitiesToCharacterProfiles(characterDao.getAllCharacters())
-    }
-
-    private fun getIdesCharactersList(characters: List<String>): List<Int> {
-        val listCharacters: MutableList<Int> = mutableListOf()
-        characters.forEach { it ->
-            val characterId = it.substringAfterLast("/", "").toInt()
-            if (characterId == 0) {
-                Log.e("Except in Episodes", "Not found id")
-            }
-            listCharacters.add(characterId)
-        }
-        return listCharacters
-    }
+//
+//    override suspend fun getAllCharactersFromLocalDb(): List<CharacterProfile> {
+//        return mapEntitiesToCharacterProfiles(characterDao.getAllCharacters())
+//    }
+//
+//    private fun getIdesCharactersList(characters: List<String>): List<Int> {
+//        val listCharacters: MutableList<Int> = mutableListOf()
+//        characters.forEach { it ->
+//            val characterId = it.substringAfterLast("/", "").toInt()
+//            if (characterId == 0) {
+//                Log.e("Except in Episodes", "Not found id")
+//            }
+//            listCharacters.add(characterId)
+//        }
+//        return listCharacters
+//    }
 }

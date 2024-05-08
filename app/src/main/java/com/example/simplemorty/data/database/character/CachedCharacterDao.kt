@@ -1,4 +1,4 @@
-package com.example.simplemorty.data.database.character.cach
+package com.example.simplemorty.data.database.character
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
@@ -21,4 +21,7 @@ interface CachedCharacterDao {
 
     @Query("SELECT * FROM cached_characters WHERE id = :id")
     suspend fun getCharacterById(id: Int): CachedCharacterEntity?
+
+    @Query("SELECT * FROM cached_characters WHERE id IN (:characterIdsList)")
+    fun getCharactersByIds(characterIdsList: List<String>): List<CachedCharacterEntity>
 }

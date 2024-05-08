@@ -26,60 +26,52 @@ internal class CharacterRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, CachedCharacterEntity>
     ): MediatorResult {
-
+        Log.e("MyTag", "я в фун лоад ремоут медиатора")
         val page = when (loadType) {
             LoadType.REFRESH -> {
-                Log.d("MyRemoteMediator", "Loading page , loadType=${loadType.name}")
+                Log.d("MyTag", "РЕФРЕШ Loading page , loadType=${loadType.name}")
                 val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
-                remoteKeys?.nextKey?.minus(1)
-                    ?: 1// always start from the first page when refreshing
+                remoteKeys?.nextKey?.minus(1) ?: STARTING_PAGE_INDEX
             }
-
             LoadType.PREPEND -> {
                 val remoteKeys = getRemoteKeyForFirstItem(state)
-                Log.d("MyRemoteMediator", "Loading page $remoteKeys, loadType=${loadType.name}")
-                remoteKeys?.prevKey
-                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+                Log.d("MyTag", "Loading page $remoteKeys, loadType=${loadType.name}")
+                remoteKeys?.prevKey ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
             }
-
             LoadType.APPEND -> {
                 val remoteKeys = getRemoteKeyForLastItem(state)
-                Log.d("MyRemoteMediator", "Loading page $remoteKeys, loadType=${loadType.name}")
-                remoteKeys?.nextKey
-                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+                Log.d("MyTag", "Loading page $remoteKeys, loadType=${loadType.name}")
+                remoteKeys?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
             }
         }
 
         try {
-            Log.i("Saves", "Получаем данные с ")
+            Log.e("MyTag", "делаю респонсе внутри медиатора:")
+            val response = characterApi.getCharacters(page)
+            Log.e("MyTag", "запрос: $response")
+            val characters = response.body()?.results ?: emptyList()
+            val sortedCharacters = characters.sortedBy { it.id }
 
-            val response = characterApi.getAllCharacters(page = page)
-            val characters = response.results
-
-           database.withTransaction {
-                if (loadType == LoadType.REFRESH) {
+            database.withTransaction {
+                if (loadType== LoadType.REFRESH){
                     database.remoteKeysDao.clearRemoteKeys()
                     database.cacheDao.clearCharacters()
                 }
             }
-            val prevKey = if (page == 1) null else page.minus(1)
+            val prevKey = if (page == STARTING_PAGE_INDEX) null else page.minus(1)
             val nextKey = if ((endOfPaginationReached)) null else page.plus(1)
 
-            Log.d("MyRemoteMediator", "Loading page $page, loadType=${loadType.name}")
+            Log.e("MyTag", "Loading page $page, loadType=${loadType.name}")
 
             val cachedCharacters = mapToCachedCharacterEntity(characters)
             cacheDao.insertAll(cachedCharacters)
 
-            Log.d(
-                "MyRemoteMediator",
-                "cachedCharacters ${cacheDao.insertAll(cachedCharacters)} characters stored "
-            )
+            Log.e("MyTag", "cachedCharacters ${cacheDao.insertAll(cachedCharacters)} characters stored ")
 
-            val listRemoteKeysEntity = listOf<RemoteKeysEntity>()
 
-            val remoteKeys = listRemoteKeysEntity.map {
+            val remoteKeys = sortedCharacters.map {
                 RemoteKeysEntity(
-                    repoId = it.repoId,
+                    repoId = it.id,
                     prevKey = prevKey,
                     nextKey = nextKey
                 )
@@ -87,12 +79,13 @@ internal class CharacterRemoteMediator(
             remoteKeysDao.insertAll(remoteKeys)
 
             return MediatorResult.Success(endOfPaginationReached = characters.isEmpty())
-
-        } catch (e: Exception) {
-            // В случае ошибки возвращаем ошибку
-            Log.e("CharacterRemoteMediator", "Error loading data", e)
-            return MediatorResult.Error(e)
+        } catch (exception: Exception) {
+            return MediatorResult.Error(exception)
         }
+    }
+
+    companion object {
+        const val STARTING_PAGE_INDEX = 1
     }
 
     private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, CachedCharacterEntity>): RemoteKeysEntity? {

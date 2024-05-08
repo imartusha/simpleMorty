@@ -1,8 +1,10 @@
 package com.example.simplemorty.data.models.dto.location
 
+import com.example.simplemorty.data.models.dto.info.InfoDTO
 import com.example.simplemorty.data.models.entity.LocationEntity
-import com.example.simplemorty.data.models.response.Result
+import com.example.simplemorty.domain.models.Info
 import com.example.simplemorty.domain.models.Location
+import com.google.gson.annotations.SerializedName
 
 class LocationDTO(
     val created: String,
@@ -12,7 +14,7 @@ class LocationDTO(
     val residents: List<String>,
     val type: String,
     val url: String
-) : Result
+)
 
 internal fun mapLocationDtoToDomain(locationDTO: LocationDTO): Location {
     return Location(

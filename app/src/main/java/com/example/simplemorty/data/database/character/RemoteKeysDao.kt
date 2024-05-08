@@ -10,10 +10,10 @@ import com.example.simplemorty.data.models.entity.character.RemoteKeysEntity
 interface RemoteKeysDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(remoteKeysEntity: List<RemoteKeysEntity>?)
+    suspend fun insertAll(remoteKeysEntity: List<RemoteKeysEntity>)
 
     @Query("SELECT * FROM remote_keys WHERE repoId = :repoId")
-    suspend fun remoteKeysRepoId(repoId: Long): RemoteKeysEntity?
+    suspend fun remoteKeysRepoId(repoId: Int?): RemoteKeysEntity?
 
     @Query("DELETE FROM remote_keys")
     suspend fun clearRemoteKeys()
