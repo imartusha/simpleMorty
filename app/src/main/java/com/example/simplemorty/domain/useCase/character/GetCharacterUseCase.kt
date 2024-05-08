@@ -10,7 +10,11 @@ class GetCharacterUseCase(
     private val charactersRepository: CharactersRepository
 ) {
 
-    suspend fun getCharacterById(id: Int): Flow<ApiResponse<CharacterProfile?>> {
+    fun getCharacterById(id: Int): Flow<ApiResponse<CharacterProfile?>> {
         return charactersRepository.getCharacterById(id = id)
+    }
+
+    suspend fun getCharacterByIdFromDb(id: Int): CharacterProfile? {
+        return charactersRepository.getCharacterByIdFromDB(id = id)
     }
 }

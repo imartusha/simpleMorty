@@ -1,27 +1,26 @@
 package com.example.simplemorty.data.repository.character
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import coil.util.CoilUtils.result
-import com.example.simplemorty.data.database.character.CharacterDao
 import com.example.simplemorty.data.database.character.DataBase
+import com.example.simplemorty.data.models.dto.character.CharacterDTO
+import com.example.simplemorty.data.models.dto.character.mapDTOsToCharacterProfiles
+import com.example.simplemorty.data.models.dto.character.mapToCharacterProfileResponse
 
 import com.example.simplemorty.data.models.entity.character.FavoriteEntity
-import com.example.simplemorty.data.models.entity.character.cach.CachedCharacterEntity
+import com.example.simplemorty.data.models.entity.character.cach.CharacterEntity
+import com.example.simplemorty.data.models.entity.character.cach.toCharacterProfile
 import com.example.simplemorty.data.models.response.ApiResponse
-import com.example.simplemorty.data.models.response.CharactersResponse
+import com.example.simplemorty.data.models.response.CommonResponse
 import com.example.simplemorty.data.network.api.character.CharacterApi
 import com.example.simplemorty.domain.models.CharacterProfile
-import com.example.simplemorty.domain.models.Episode
 import com.example.simplemorty.domain.repository.CharactersRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import com.example.simplemorty.utils.result
@@ -34,12 +33,11 @@ internal class CharactersRepositoryImpl(
 
 ) : CharactersRepository {
 
-
     private val cacheDao = dataBase.cacheDao
     private val favoriteDao = dataBase.favoriteDao
 
     @OptIn(ExperimentalPagingApi::class)
-    override suspend fun getCharacters(): Flow<PagingData<CachedCharacterEntity>> {
+    override suspend fun getCharacters(): Flow<PagingData<CharacterEntity>> {
         return Pager(
             config = PagingConfig(pageSize = 42, enablePlaceholders = false),
             initialKey = 1,
@@ -60,30 +58,25 @@ internal class CharactersRepositoryImpl(
 
     override fun getCharacterById(id: Int): Flow<ApiResponse<CharacterProfile?>> =
         result {
-            characterApi.getCharacterById(id = id)
+            mapToCharacterProfileResponse(characterApi.getCharacterById(id = id))
         }.flowOn(Dispatchers.IO)
 
+    override suspend fun getCharacterByIdFromDB(id: Int): CharacterProfile? {
+        return dataBase.cacheDao.getCharacterById(id = id)?.toCharacterProfile()
+    }
 
-    //    override suspend fun getCharacterEpisodes(episodeList: String): Flow<ApiResponse<List<Episode>?>> =
-//        result {
-//            characterApi.getCharacterEpisodes(episodeList)
-//        }.flowOn(Dispatchers.IO)
+    override suspend fun getMultipleCharacters(characterIdsList: String): List<CharacterProfile> {
+        return mapDTOsToCharacterProfiles(characterApi.getMultipleCharacters(characterIdsList))
+    }
 
-//    override fun getMultipleCharacters(characterIdsList: List<String>): Flow<ApiResponse<List<CharacterProfile>?>> =
-//        result {
-//            characterApi.getMultipleCharacters(characterIdsList = characterIdsList)
-//        }.flowOn(Dispatchers.IO)
-override suspend fun getMultipleCharacters(characterIdsList: String): List<CharacterProfile> {
-    return characterApi.getMultipleCharacters(characterIdsList)
-}
-
-
-
-    override fun getSearch(text: String, status: String): Flow<ApiResponse<CharactersResponse?>> {
+    override fun getSearch(
+        text: String,
+        status: String
+    ): Flow<ApiResponse<CommonResponse<CharacterDTO>?>> {
         TODO("Not yet implemented")
     }
 
-    override fun getSearchAll(text: String): Flow<ApiResponse<CharactersResponse?>> {
+    override fun getSearchAll(text: String): Flow<ApiResponse<CommonResponse<CharacterDTO>?>> {
         TODO("Not yet implemented")
     }
 

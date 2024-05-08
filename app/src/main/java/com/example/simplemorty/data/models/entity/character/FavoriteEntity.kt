@@ -7,10 +7,11 @@ import androidx.room.TypeConverters
 import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Homeland
 import com.example.simplemorty.domain.models.Location
+import com.example.simplemorty.utils.ConvertersCharacter
 import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "favorite_entity")
-@TypeConverters(Converters::class)
+@TypeConverters(ConvertersCharacter::class)
 data class FavoriteEntity(
     @PrimaryKey(autoGenerate = true)
     @field:SerializedName("id")

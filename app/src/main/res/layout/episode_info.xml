@@ -35,7 +35,7 @@
             android:textStyle="italic" />
 
         <TextView
-            android:id="@+id/airDate"
+            android:id="@+id/episodeAirDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="10dp"

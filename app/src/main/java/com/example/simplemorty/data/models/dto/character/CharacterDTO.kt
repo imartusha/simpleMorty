@@ -10,7 +10,7 @@ import com.example.simplemorty.domain.models.Location
 import com.example.simplemorty.domain.models.Homeland
 import com.example.simplemorty.domain.models.Info
 import com.google.gson.annotations.SerializedName
-
+import retrofit2.Response
 
 
 class CharacterDTO(
@@ -41,6 +41,12 @@ class CharacterDTO(
     @SerializedName("isFavorite")
     var isFavorite: Boolean
 )
+
+internal fun mapToCharacterProfileResponse(responseDTO: Response<CharacterDTO>): Response<CharacterProfile> {
+    val characterDTO = responseDTO.body()
+    val characterProfile = characterDTO?.toCharacterProfile()
+    return Response.success(characterProfile)
+}
 
 internal fun CharacterDTO.toCharacterProfile(): CharacterProfile {
     return CharacterProfile(

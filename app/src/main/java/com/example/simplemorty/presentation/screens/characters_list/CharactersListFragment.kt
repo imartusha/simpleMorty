@@ -64,6 +64,7 @@ class CharactersListFragment : Fragment() {
                     }
             }
         }
+
         viewModel.dispatch(IntentScreenCharacters.GetAllCharacters)
     }
 }

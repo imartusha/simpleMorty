@@ -20,12 +20,14 @@ sealed class ApiResponse<out T> {
         fun <T> failure(e: Throwable,data : Response<ResponseBody>?): ApiResponse<T> = Failure(e,data)
     }
 }
-data class CharactersResponse(
+
+data class CommonResponse<V>(
     @SerializedName("info")
     val info: Info?,
     @SerializedName("results")
-    val results: List<CharacterProfile>? = emptyList()
+    val results: List<V>? = emptyList()
 )
+
 data class EpisodeResponse(
     @SerializedName("info")
     val info: Info? ,

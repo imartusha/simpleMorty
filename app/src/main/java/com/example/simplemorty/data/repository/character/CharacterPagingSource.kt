@@ -4,24 +4,23 @@ import android.net.Uri
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.simplemorty.data.models.dto.character.toCharacterProfile
-import com.example.simplemorty.data.models.entity.character.cach.CachedCharacterEntity
+import com.example.simplemorty.data.models.entity.character.cach.CharacterEntity
+import com.example.simplemorty.data.models.entity.character.cach.mapToCharacterProfileResponse
 import com.example.simplemorty.data.network.api.character.CharacterApi
-import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.toCachedCharacterEntity
 
 private const val STARTING_PAGE_INDEX = 1
 
 internal class CharacterPagingSource(
     private val characterApi: CharacterApi
-) : PagingSource<Int, CachedCharacterEntity>() {
+) : PagingSource<Int, CharacterEntity>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CachedCharacterEntity> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CharacterEntity> {
         val pageNumber = params.key ?: STARTING_PAGE_INDEX
         Log.d("MyPagingSource", "Loading page $pageNumber")
 
         return try {
-            val response = characterApi.getCharacters(pageNumber)
+            val response = mapToCharacterProfileResponse(characterApi.getCharacters(pageNumber))
 
             var nextPageNumber: Int? = null
 
@@ -43,7 +42,7 @@ internal class CharacterPagingSource(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, CachedCharacterEntity>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, CharacterEntity>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)
             anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)

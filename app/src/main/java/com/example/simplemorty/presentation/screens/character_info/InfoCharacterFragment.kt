@@ -11,6 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.simplemorty.databinding.CharacterInfoBinding
+import com.example.simplemorty.utils.formatDateString
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -52,12 +53,18 @@ class InfoCharacterFragment : Fragment() {
                         Glide.with(requireContext())
                             .load(characterProfile?.image)
                             .into(binding.imageViewCharacter)
-                        binding.textViewCreated.text = characterProfile?.created
-                        binding.textViewHomeland.text = characterProfile?.homeland.toString()
-                        binding.textViewEpisode.text = characterProfile?.episode.toString()
-                        binding.textViewLocation.text = characterProfile?.location.toString()
+                        binding.textViewCreated.text = characterProfile?.created?.formatDateString()
+                        binding.textViewHomeland.text = characterProfile?.homeland?.name
+                        binding.textViewLocation.text = characterProfile?.location?.name
                     }
             }
         }
+        //        viewLifecycleOwner.lifecycleScope.launch {
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                viewModel.episodesForCharacter.collect { episodes ->
+//                    adapter.updateCharactersList(characters)
+//                }
+//            }
+//        }
     }
 }

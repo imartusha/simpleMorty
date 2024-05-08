@@ -78,33 +78,36 @@ class InfoEpisodeViewModel(
     }
 
     private suspend fun getListCharactersForEpisode(episode: Episode) {
-        getCharactersListForInfo.getCharactersListForInfo(charactersIdes = episode.characters)
+        val characters = getCharactersListForInfo.getCharactersListForInfo(episode)
+        _charactersForEpisode.update {
+            characters
+        }
     }
 
 
-    private fun updateEpisodeInfo(
-        state: ScreenStateEpisode,
-        episode: Episode,
-        characters: List<CharacterProfile> // Принимаем список персонажей
-    ): ScreenStateEpisode {
-        return state.copy(
-            name = episode.name,
-            episode = episode.episode,
-            airDate = episode.airDate,
-            created = episode.created.formatDateString(),
-            characters = characters,
-            url = episode.url
-        )
-    }
+//    private fun updateEpisodeInfo(
+//        state: ScreenStateEpisode,
+//        episode: Episode,
+//        characters: List<CharacterProfile> // Принимаем список персонажей
+//    ): ScreenStateEpisode {
+//        return state.copy(
+//            name = episode.name,
+//            episode = episode.episode,
+//            airDate = episode.airDate.formatDateString(),
+//            created = episode.created.formatDateString(),
+//            characters = characters,
+//            url = episode.url
+//        )
+//    }
 
-    data class ScreenStateEpisode(
-        val name: String? = null,
-        val episode: String? = null,
-        val airDate: String? = null,
-        val created: String? = null,
-        val characters: List<CharacterProfile> ? = null,
-        val url: String? = null
-    )
+//    data class ScreenStateEpisode(
+//        val name: String? = null,
+//        val episode: String? = null,
+//        val airDate: String? = null,
+//        val created: String? = null,
+//        val characters: List<CharacterProfile>? = null,
+//        val url: String? = null
+//    )
 
     sealed interface IntentScreenInfoEpisode {
 

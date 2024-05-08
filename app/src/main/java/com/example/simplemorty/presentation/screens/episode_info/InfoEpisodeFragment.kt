@@ -1,7 +1,6 @@
 package com.example.simplemorty.presentation.screens.episode_info
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simplemorty.databinding.EpisodeInfoBinding
-import com.example.simplemorty.presentation.adapter.character_adapter.CharactersAdapter
 import com.example.simplemorty.presentation.adapter.character_adapter.CharactersListAdapter
-import kotlinx.coroutines.flow.map
+import com.example.simplemorty.utils.formatDateString
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -71,11 +68,13 @@ class InfoEpisodeFragment : Fragment() {
                     .collect { episode ->
                         binding.episodesName.text = episode?.name
                         binding.episodeEpisode.text = episode?.episode
-                        binding.airDate.text = episode?.airDate
-                        binding.episodeCreated.text = episode?.created
+                        binding.episodeAirDate.text = episode?.airDate
+                        binding.episodeCreated.text = episode?.created?.formatDateString()
                     }
             }
+
         }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.charactersForEpisode.collect { characters ->

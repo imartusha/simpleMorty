@@ -2,19 +2,20 @@ package com.example.simplemorty.data.models.entity.character.cach
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.example.simplemorty.data.models.dto.character.CharacterDTO
+import com.example.simplemorty.data.models.dto.character.toCharacterProfile
+import com.example.simplemorty.data.models.response.CommonResponse
 import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Homeland
 import com.example.simplemorty.domain.models.Location
-import com.google.gson.Gson
+import com.example.simplemorty.utils.ConvertersCharacter
 import com.google.gson.annotations.SerializedName
-import com.google.gson.reflect.TypeToken
+import retrofit2.Response
 
 @Entity(tableName = "cached_characters")
-@TypeConverters(ConvertersCachedCharacterEntity::class)
-data class CachedCharacterEntity(
+@TypeConverters(ConvertersCharacter::class)
+data class CharacterEntity(
     @PrimaryKey @field:SerializedName("id")
     val id: Int? = 0,
     @SerializedName("created")
@@ -30,7 +31,7 @@ data class CachedCharacterEntity(
     @SerializedName("name")
     val name: String? = "",
     @SerializedName("origin")
-    val homeland:Homeland?,
+    val homeland: Homeland?,
     @SerializedName("species")
     val species: String? = "",
     @SerializedName("status")
@@ -40,47 +41,30 @@ data class CachedCharacterEntity(
     @SerializedName("url")
     val url: String? = "",
     var isFavorite: Boolean
-
 )
-object ConvertersCachedCharacterEntity {
-    private val gson = Gson()
 
-    @TypeConverter
-    fun fromStringToList(value: String?): List<String> {
-        val listType = object : TypeToken<List<String?>?>() {}.type
-        return gson.fromJson(value, listType)
+internal fun mapToCharacterProfileResponse(response: Response<CommonResponse<CharacterDTO>>): Response<CommonResponse<CharacterProfile>> {
+    val commonResponseDTO = response.body()
+    val resultsDTO = commonResponseDTO?.results
+    val resultsEntity = resultsDTO?.map { characterDTO ->
+        characterDTO.toCharacterProfile()
     }
-
-    @TypeConverter
-    fun fromListToString(list: List<String?>?): String {
-        return gson.toJson(list)
-    }
-
-    @TypeConverter
-    fun fromJsonLocation(json: String?): Location? {
-        return gson.fromJson(json, Location::class.java)
-    }
-
-    @TypeConverter
-    fun toJson(location: Location?): String? {
-        return gson.toJson(location)
-    }
-
-
-    @TypeConverter
-    fun fromJsonHomeland(json: String?): Homeland? {
-        return gson.fromJson(json, Homeland::class.java)
-    }
-
-    @TypeConverter
-    fun toJson(homeland: Homeland?): String? {
-        return gson.toJson(homeland)
-    }
+    val commonResponseEntity = CommonResponse(info = null, results = resultsEntity)
+    return Response.success(commonResponseEntity)
 }
 
+internal fun mapToCachedCharacterResponse(response: Response<CommonResponse<CharacterDTO>>): Response<CommonResponse<CharacterEntity>> {
+    val commonResponseDTO = response.body()
+    val resultsDTO = commonResponseDTO?.results
+    val resultsEntity = resultsDTO?.map { characterDTO ->
+        characterDTO.toCachedCharacterEntity()
+    }
+    val commonResponseEntity = CommonResponse(info = null, results = resultsEntity)
+    return Response.success(commonResponseEntity)
+}
 
-fun CharacterDTO.toCachedCharacterEntity(): CachedCharacterEntity {
-    return CachedCharacterEntity(
+fun CharacterDTO.toCachedCharacterEntity(): CharacterEntity {
+    return CharacterEntity(
         created = created,
         episode = episode,
         gender = gender,
@@ -88,7 +72,7 @@ fun CharacterDTO.toCachedCharacterEntity(): CachedCharacterEntity {
         image = image,
         location = location,
         name = name,
-        homeland =homeland,
+        homeland = homeland,
         species = species,
         status = status,
         type = type,
@@ -96,8 +80,9 @@ fun CharacterDTO.toCachedCharacterEntity(): CachedCharacterEntity {
         isFavorite = isFavorite
     )
 }
-fun CharacterProfile.toCachedCharacterEntity(): CachedCharacterEntity {
-    return CachedCharacterEntity(
+
+fun CharacterProfile.toCachedCharacterEntity(): CharacterEntity {
+    return CharacterEntity(
         created = created,
         episode = episode,
         gender = gender,
@@ -105,7 +90,7 @@ fun CharacterProfile.toCachedCharacterEntity(): CachedCharacterEntity {
         image = image,
         location = location,
         name = name,
-        homeland =homeland,
+        homeland = homeland,
         species = species,
         status = status,
         type = type,
@@ -113,7 +98,8 @@ fun CharacterProfile.toCachedCharacterEntity(): CachedCharacterEntity {
         isFavorite = isFavorite
     )
 }
-fun CachedCharacterEntity.toCharacterProfile(): CharacterProfile {
+
+fun CharacterEntity.toCharacterProfile(): CharacterProfile {
     return CharacterProfile(
         created = created,
         episode = episode,
@@ -122,7 +108,7 @@ fun CachedCharacterEntity.toCharacterProfile(): CharacterProfile {
         image = image,
         location = location,
         name = name,
-        homeland =homeland,
+        homeland = homeland,
         species = species,
         status = status,
         type = type,
@@ -131,13 +117,13 @@ fun CachedCharacterEntity.toCharacterProfile(): CharacterProfile {
     )
 }
 
-//fun mapToCachedCharacterEntity(characters: List<CharacterDTO>): List<CachedCharacterEntity> {
-//    return characters.map { characterDTO ->
-//        characterDTO.toCachedCharacterEntity()
-//    }
-//}
-fun mapToCachedCharacterEntity(characters: List<CharacterProfile>): List<CachedCharacterEntity> {
+fun fromProfileToCachedCharacterEntity(characters: List<CharacterProfile>): List<CharacterEntity> {
     return characters.map { characterProfile ->
         characterProfile.toCachedCharacterEntity()
+    }
+}
+fun mapToCachedCharacterEntity(characters: List<CharacterDTO>): List<CharacterEntity> {
+    return characters.map { characterDTO ->
+        characterDTO.toCachedCharacterEntity()
     }
 }

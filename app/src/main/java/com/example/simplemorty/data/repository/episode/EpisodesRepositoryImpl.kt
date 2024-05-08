@@ -36,6 +36,7 @@ internal class EpisodesRepositoryImpl(
 
     override fun getEpisodesById(id: Int): Flow<ApiResponse<Episode?>> =
         result {
+            Log.e("MyTag", "1111111111111111111111111111${episodeApi.getEpisodeById(id).body()?.airDate}, ${episodeApi.getEpisodeById(id).body()?.created}")
             episodeApi.getEpisodeById(id)
         }.flowOn(Dispatchers.IO)
 

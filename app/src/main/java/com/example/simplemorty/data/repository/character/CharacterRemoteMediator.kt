@@ -8,7 +8,7 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.example.simplemorty.data.database.character.DataBase
-import com.example.simplemorty.data.models.entity.character.cach.CachedCharacterEntity
+import com.example.simplemorty.data.models.entity.character.cach.CharacterEntity
 import com.example.simplemorty.data.models.entity.character.RemoteKeysEntity
 import com.example.simplemorty.data.models.entity.character.cach.mapToCachedCharacterEntity
 import com.example.simplemorty.data.network.api.character.CharacterApi
@@ -17,14 +17,14 @@ import com.example.simplemorty.data.network.api.character.CharacterApi
 internal class CharacterRemoteMediator(
     private val characterApi: CharacterApi,
     private val database: DataBase
-) : RemoteMediator<Int, CachedCharacterEntity>() {
+) : RemoteMediator<Int, CharacterEntity>() {
 
     private val remoteKeysDao = database.remoteKeysDao
     private val cacheDao = database.cacheDao
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, CachedCharacterEntity>
+        state: PagingState<Int, CharacterEntity>
     ): MediatorResult {
         Log.e("MyTag", "я в фун лоад ремоут медиатора")
         val page = when (loadType) {
@@ -88,21 +88,21 @@ internal class CharacterRemoteMediator(
         const val STARTING_PAGE_INDEX = 1
     }
 
-    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, CachedCharacterEntity>): RemoteKeysEntity? {
+    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, CharacterEntity>): RemoteKeysEntity? {
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
             ?.let {
                 database.remoteKeysDao.remoteKeysRepoId(it.id)
             }
     }
 
-    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, CachedCharacterEntity>): RemoteKeysEntity? {
+    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, CharacterEntity>): RemoteKeysEntity? {
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
             ?.let {
                 database.remoteKeysDao.remoteKeysRepoId(it.id)
             }
     }
 
-    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, CachedCharacterEntity>): RemoteKeysEntity? {
+    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, CharacterEntity>): RemoteKeysEntity? {
         return state.anchorPosition?.let { position ->
             state.closestItemToPosition(position)?.id?.let { repoId ->
                 database.remoteKeysDao.remoteKeysRepoId(repoId)

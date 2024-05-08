@@ -12,7 +12,6 @@ class EpisodeDTO(
 
     @SerializedName("air_date")
     val airDate: String,
-
     val characters: List<String>,
     val created: String,
     val episode: String,
