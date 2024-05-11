@@ -35,7 +35,7 @@
             android:textStyle="italic" />
 
         <TextView
-            android:id="@+id/airDate"
+            android:id="@+id/episodeAirDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="10dp"
@@ -99,6 +99,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/item_character" />
+        tools:listitem="@layout/character_item" />
 
 </LinearLayout>

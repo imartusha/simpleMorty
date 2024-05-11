@@ -1,110 +1,96 @@
 package com.example.simplemorty.data.models.dto.character
 
-import com.example.simplemorty.data.models.entity.character.CharacterEntity
-import com.example.simplemorty.data.models.entity.character.mapEntityToCharacterProfile
-import com.example.simplemorty.data.models.entity.character.mapFromDTOToCharacterEntity
-import com.example.simplemorty.data.models.entity.character.mapToCharacterEntity
-import com.example.simplemorty.data.models.response.Result
+import androidx.room.PrimaryKey
+import com.example.simplemorty.data.models.entity.character.cach.CharacterEntity
 import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Location
 import com.example.simplemorty.domain.models.Homeland
 import com.google.gson.annotations.SerializedName
+import retrofit2.Response
 
 class CharacterDTO(
-    val created: String,
-    val episode: List<String>,
-    val gender: String,
-    val id: Int,
-    val image: String,
-    val location: Location,
-    val name: String?,
-
+    @PrimaryKey @field:SerializedName("id")
+    val id: Int? = 0,
+    @SerializedName("created")
+    val created: String? = "",
+    @SerializedName("episode")
+    val episode: List<String>? = listOf(),
+    @SerializedName("gender")
+    val gender: String? = "",
+    @SerializedName("image")
+    val image: String? = "",
+    @SerializedName("location")
+    val location: Location?,
+    @SerializedName("name")
+    val name: String? = "",
     @SerializedName("origin")
     val homeland: Homeland?,
+    @SerializedName("species")
+    val species: String? = "",
+    @SerializedName("status")
+    val status: String? = "",
+    @SerializedName("type")
+    val type: String? = "",
+    @SerializedName("url")
+    val url: String? = "",
+    @SerializedName("isFavorite")
+    var isFavorite: Boolean
+)
 
-    val species: String,
-    val status: String,
-    val type: String,
-    val url: String
-) : Result
+internal fun mapToCharacterProfileResponse(responseDTO: Response<CharacterDTO>): Response<CharacterProfile> {
+    val characterDTO = responseDTO.body()
+    val characterProfile = characterDTO?.toCharacterProfile()
+    return Response.success(characterProfile)
+}
 
+internal fun CharacterDTO.toCharacterProfile(): CharacterProfile {
+    return CharacterProfile(
+        id = id,
+        name = requireNotNull(name),
+        status = status,
+        species = species,
+        type = type,
+        gender = gender,
+        homeland = requireNotNull(homeland),
+        location = requireNotNull(location),
+        image = image,
+        isFavorite = isFavorite,
+        episode = requireNotNull(episode)
+    )
+}
 
-//    internal fun mapCommonResponseToCharacterDTO(commonResponse: CommonResponse<CharacterDTO>): List<CharacterDTO> {
-//        return commonResponse.results.map { result ->
-//            map
-//        }
-//    }
-    internal fun mapDtoToCharacterProfile(characterDTO: CharacterDTO): CharacterProfile {
-        return CharacterProfile(
-            created = characterDTO.created,
-            episode = characterDTO.episode,
-            gender = characterDTO.gender,
-            id = characterDTO.id,
-            image = characterDTO.image,
-            location = characterDTO.location,
-            name = requireNotNull(characterDTO.name),
-            homeland = requireNotNull(characterDTO.homeland),
-            species = characterDTO.species,
-            status = characterDTO.status,
-            type = characterDTO.type,
-            url = characterDTO.url
-        )
+internal fun CharacterDTO.toCharacterEntity(): CharacterEntity {
+    return CharacterEntity(
+        id = id,
+        name = requireNotNull(name),
+        status = status,
+        species = species,
+        type = type,
+        gender = gender,
+        homeland = requireNotNull(homeland),
+        location = requireNotNull(location),
+        image = image,
+        isFavorite = isFavorite
+    )
+}
+
+internal fun CharacterProfile.toCharacterDto(): CharacterDTO {
+    return CharacterDTO(
+        id = id,
+        name = requireNotNull(name),
+        status = status,
+        species = species,
+        type = type,
+        gender = gender,
+        homeland = requireNotNull(homeland),
+        location = requireNotNull(location),
+        image = image,
+        isFavorite = isFavorite
+    )
+}
+
+fun mapDTOsToCharacterProfiles(characters: List<CharacterDTO>): List<CharacterProfile> {
+    return characters.map { characterDTO ->
+        characterDTO.toCharacterProfile()
     }
-
-    internal fun mapDtoToCharacterEntity(characterDTO: CharacterDTO): CharacterEntity {
-        return CharacterEntity(
-            created = characterDTO.created,
-            episode = characterDTO.episode,
-            gender = characterDTO.gender,
-            id = characterDTO.id,
-            image = characterDTO.image,
-            location = characterDTO.location,
-            name = requireNotNull(characterDTO.name),
-            homeland = requireNotNull(characterDTO.homeland),
-            species = characterDTO.species,
-            status = characterDTO.status,
-            type = characterDTO.type,
-            url = characterDTO.url
-        )
-    }
-
-    internal fun mapProfileToCharacterDto(characterProfile: CharacterProfile): CharacterDTO {
-        return CharacterDTO(
-            created = characterProfile.created,
-            episode = characterProfile.episode,
-            gender = characterProfile.gender,
-            id = characterProfile.id,
-            image = characterProfile.image,
-            location = characterProfile.location,
-            name = characterProfile.name,
-            homeland = characterProfile.homeland,
-            species = characterProfile.species,
-            status = characterProfile.status,
-            type = characterProfile.type,
-            url = characterProfile.url
-        )
-    }
-
-    fun mapCharacterDTOsToProfiles(characters: List<CharacterDTO>): List<CharacterProfile> {
-        return characters.map { characterDTO ->
-            mapDtoToCharacterProfile(characterDTO)
-        }
-    }
-
-    fun mapCharacterEntitiesToProfiles(characters: List<CharacterEntity>): List<CharacterProfile> {
-        return characters.map { characterEntity ->
-            mapEntityToCharacterProfile(characterEntity)
-        }
-    }
-
-    fun mapProfilesToCharacterEntities(characters: List<CharacterProfile>): List<CharacterEntity> {
-        return characters.map { characterProfile ->
-            mapToCharacterEntity(characterProfile)
-        }
-    }
-
-    fun mapDTOsToCharacterEntities(characters: List<CharacterDTO>): List<CharacterEntity> {
-        return characters.map { characterDTO ->
-            mapFromDTOToCharacterEntity(characterDTO)
-        }
-    }
+}

@@ -1,5 +1,6 @@
 package com.example.simplemorty.presentation.screens.characters_list
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -26,11 +27,17 @@ class CharactersViewModel(
 
     private fun getCharacters() {
         viewModelScope.launch {
-            getAllCharactersUseCase.getAllCharacters()
-                .cachedIn(viewModelScope)
-                .collectLatest { pagingData ->
-                    _characters.value = pagingData
-                }
+            try {
+                getAllCharactersUseCase.getAllCharacters()
+                    .cachedIn(viewModelScope)
+                    .collectLatest { pagingData ->
+                        _characters.value = pagingData
+                        Log.e("MyTag", "New data emitted to UI: $pagingData")
+
+                    }
+            } catch (e: Exception) {
+                Log.e("MyTag", "Error in getCharacters: ${e.message}", e)
+            }
         }
     }
 }

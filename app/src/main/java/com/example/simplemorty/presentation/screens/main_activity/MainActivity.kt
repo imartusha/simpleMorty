@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityMainBinding
-    private var backButtonCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -36,14 +35,11 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar) // Устанавливаем тулбар в качестве экшн-бара
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Включаем кнопку "назад"
 
-//???????????
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            val intent = Intent(this@MainActivity, MainActivity::class.java)
-//            startActivity(intent)
-//            finish()
-//        }, 3000)
         val navView: BottomNavigationView = binding.navView
         navView.setupWithNavController(navController)
+
+        binding.toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
-    override fun onSupportNavigateUp() = findNavController(R.id.nav_host_fragment).navigateUp()
 }

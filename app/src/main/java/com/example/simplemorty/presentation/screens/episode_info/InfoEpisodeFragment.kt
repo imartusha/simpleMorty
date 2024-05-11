@@ -10,11 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simplemorty.databinding.EpisodeInfoBinding
-import com.example.simplemorty.presentation.adapter.character_adapter.CharactersAdapter
-import kotlinx.coroutines.flow.map
+import com.example.simplemorty.presentation.adapter.character_adapter.CharactersListAdapter
+import com.example.simplemorty.utils.formatDateString
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -24,8 +23,11 @@ class InfoEpisodeFragment : Fragment() {
     private val binding get() = fragmentInfoEpisodeBinding
 
     private val args: InfoEpisodeFragmentArgs by navArgs()
-    private lateinit var adapter: CharactersAdapter
+
     private val viewModel: InfoEpisodeViewModel by viewModel<InfoEpisodeViewModel>()
+
+    private lateinit var adapter: CharactersListAdapter
+    private lateinit var layoutManager: LinearLayoutManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,33 +43,38 @@ class InfoEpisodeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.dispatch(IntentScreenInfoEpisode.GetEpisode(args.id))
+        viewModel.dispatch(InfoEpisodeViewModel.IntentScreenInfoEpisode.GetEpisode(args.id))
+        layoutManager = LinearLayoutManager(activity)
 
-        adapter = CharactersAdapter() { characterProfile ->
+        adapter = CharactersListAdapter(emptyList()) { characterProfile ->
             val action = InfoEpisodeFragmentDirections
-                .actionInfoEpisodeFragmentToInfoFragment(characterProfile.id)
+                .actionInfoEpisodeFragmentToInfoFragment(characterProfile.id!!)
             findNavController().navigate(action)
         }
-        binding.rvCharactersInEpisodes.apply {
-            layoutManager = LinearLayoutManager(activity)
-            adapter = this@InfoEpisodeFragment.adapter
-        }
+
+        val recyclerView = binding.rvCharactersInEpisodes
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = adapter
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.characters.collect { characterProfileList ->
-                    adapter.submitData(characterProfileList)
-                }
+                viewModel._episodeByIdStateFlow
+                    .collect { episode ->
+                        with(binding) {
+                            episodesName.text = episode?.name
+                            episodeEpisode.text = episode?.episode
+                            episodeAirDate.text = episode?.airDate
+                            episodeCreated.text = episode?.created?.formatDateString()
+                        }
+                    }
             }
         }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.state
-                    .collect { episode ->
-                        binding.episodesName.text = episode?.name
-                        binding.episodeEpisode.text = episode?.episode
-                        binding.airDate.text = episode?.airDate
-                        binding.episodeCreated.text = episode?.created
-                    }
+                viewModel.charactersForEpisode.collect { characters ->
+                    adapter.updateCharactersList(characters)
+                }
             }
         }
     }

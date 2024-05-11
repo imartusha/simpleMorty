@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Episode Name"
+        android:text="@string/episode_name"
         android:textStyle="bold"
         android:textColor="@color/black"
         />
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Episode Number"
+        android:text="@string/episode_number"
         android:textColor="@color/black"
         />
 
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Air Date"
+        android:text="@string/air_date"
         android:textColor="@color/black"
         />
 </LinearLayout>

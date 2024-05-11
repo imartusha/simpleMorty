@@ -2,31 +2,33 @@ package com.example.simplemorty.presentation.screens.episode_info
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
+import com.example.simplemorty.data.models.response.ApiResponse
 import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Episode
 import com.example.simplemorty.domain.useCase.character.GetCharactersListForInfo
-import com.example.simplemorty.domain.useCase.episode.GetInfoEpisodeByIdUseCase
-import com.example.simplemorty.utils.formatDateString
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
+import com.example.simplemorty.domain.useCase.episode.GetEpisodeByIdUseCase
+import com.google.gson.Gson
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+
 class InfoEpisodeViewModel(
-    private val getInfoEpisodeByIdUseCase: GetInfoEpisodeByIdUseCase,
+    private val getEpisodeByIdUseCase: GetEpisodeByIdUseCase,
     private val getCharactersListForInfo: GetCharactersListForInfo
 ) : ViewModel() {
 
-    private val _characters = MutableStateFlow<PagingData<CharacterProfile>>(PagingData.empty())
-    val characters: StateFlow<PagingData<CharacterProfile>> get() = _characters
+    private val _charactersForEpisode = MutableStateFlow<List<CharacterProfile>>(emptyList())
+    val charactersForEpisode: StateFlow<List<CharacterProfile>> get() = _charactersForEpisode
 
-    private val _state = MutableStateFlow(ScreenStateEpisode())
-    val state: StateFlow<ScreenStateEpisode> = _state
+
+    private val episodeByIdStateFlow: MutableSharedFlow<Episode?> = MutableSharedFlow()
+    val _episodeByIdStateFlow: SharedFlow<Episode?> = episodeByIdStateFlow
+
+    private val progressStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val _progressStateFlow: StateFlow<Boolean> = progressStateFlow
+
+//    private val charactersFromLocationStateFlow: MutableSharedFlow<List<CharacterProfile>?> =
+//        MutableSharedFlow()
 
     fun dispatch(intentScreenInfoEpisode: IntentScreenInfoEpisode) {
         when (intentScreenInfoEpisode) {
@@ -37,50 +39,54 @@ class InfoEpisodeViewModel(
 
     private fun getEpisodeById(id: Int) {
         viewModelScope.launch {
-            val episode = getInfoEpisodeByIdUseCase.getInfoEpisode(id = id)
-            getListCharactersForEpisode(episode)
-            _state.update { state ->
-                updateEpisodeInfo(state, episode, characters)
+            val episodeFromDb = getEpisodeByIdUseCase.getEpisodeByIdFromDb(id = id)
+            if (episodeFromDb != null) {
+                episodeByIdStateFlow.emit((episodeFromDb))
+                getListCharactersForEpisode(episodeFromDb)
+            } else {
+                getEpisodeByIdUseCase.getEpisodeById(id).collectLatest {
+                    when (it) {
+                        is ApiResponse.Progress -> {
+                            progressStateFlow.value = true
+                        }
+
+                        is ApiResponse.Success -> {
+                            episodeByIdStateFlow.emit(it.data)
+                            progressStateFlow.value = false
+
+                            it.data?.let { episode ->
+                                getListCharactersForEpisode(episode)
+                            }
+                        }
+
+                        is ApiResponse.Failure -> {
+                            try {
+                                val errorResponse = Gson().fromJson(
+                                    it.data!!.errorBody()!!.string(),
+                                    Episode::class.java
+                                )
+                                episodeByIdStateFlow.emit(errorResponse)
+                            } catch (e: Exception) {
+                                //   toastMessageObserver.setValue("Connection failed.")
+                            }
+                            progressStateFlow.value = false
+
+                        }
+                    }
+                }
             }
         }
     }
 
-    private fun getListCharactersForEpisode(episode: Episode) {
-        viewModelScope.launch {
-            getCharactersListForInfo.getCharactersListForInfo(charactersIdes = episode.characters)
-                .cachedIn(viewModelScope)
-                .collectLatest { pagingData ->
-                    _characters.value = pagingData
-                }
+    private suspend fun getListCharactersForEpisode(episode: Episode) {
+        val characters = getCharactersListForInfo.getCharactersListForInfo(episode)
+        _charactersForEpisode.update {
+            characters
         }
     }
-}
 
-private fun updateEpisodeInfo(
-    state: ScreenStateEpisode,
-    episode: Episode,
-    characters: StateFlow<PagingData<CharacterProfile>> // Принимаем список персонажей
-): ScreenStateEpisode {
-    return state.copy(
-        name = episode.name,
-        episode = episode.episode,
-        airDate = episode.airDate,
-        created = episode.created.formatDateString(),
-        characters = characters,
-        url = episode.url
-    )
-}
+    sealed interface IntentScreenInfoEpisode {
 
-data class ScreenStateEpisode(
-    val name: String? = null,
-    val episode: String? = null,
-    val airDate: String? = null,
-    val created: String? = null,
-    val characters: StateFlow<PagingData<CharacterProfile>>? = null,
-    val url: String? = null
-)
-
-sealed interface IntentScreenInfoEpisode {
-
-    data class GetEpisode(val id: Int) : IntentScreenInfoEpisode
+        data class GetEpisode(val id: Int) : IntentScreenInfoEpisode
+    }
 }

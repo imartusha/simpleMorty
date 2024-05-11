@@ -2,15 +2,19 @@ package com.example.simplemorty.data.models.entity.episode
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.example.simplemorty.data.models.entity.character.Converters
+import com.example.simplemorty.data.models.dto.episode.EpisodeDTO
+import com.example.simplemorty.data.models.dto.episode.toEpisode
+import com.example.simplemorty.data.models.dto.location.LocationDTO
+import com.example.simplemorty.data.models.entity.location.LocationEntity
+import com.example.simplemorty.data.models.entity.location.toLocationEntity
+import com.example.simplemorty.data.models.response.CommonResponse
 import com.example.simplemorty.domain.models.Episode
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.example.simplemorty.utils.Converter
+import retrofit2.Response
 
 @Entity(tableName = "episodes")
-@TypeConverters(ConvertersEpisode::class)
+@TypeConverters(Converter::class)
 class EpisodeEntity(
     @PrimaryKey(autoGenerate = false)
     val id: Int,
@@ -22,48 +26,58 @@ class EpisodeEntity(
     val url: String
 )
 
-object ConvertersEpisode {
-    private val gson = Gson()
-
-    @TypeConverter
-    fun fromStringToList(value: String?): List<String> {
-        val listType = object : TypeToken<List<String?>>() {}.type
-        return gson.fromJson(value, listType)
+internal fun mapToEpisodeResponse(response: Response<CommonResponse<EpisodeDTO>>): Response<CommonResponse<Episode>> {
+    val commonResponseDTO = response.body()
+    val resultsDTO = commonResponseDTO?.results
+    val resultsEntity = resultsDTO?.map { episodeDTO ->
+        episodeDTO.toEpisode()
     }
-
-    @TypeConverter
-    fun fromListToString(list: List<String?>): String {
-        return gson.toJson(list)
-    }
-
+    val commonResponseEntity = CommonResponse(info = null, results = resultsEntity)
+    return Response.success(commonResponseEntity)
 }
 
-fun mapToEntityEpisode(episode: Episode): EpisodeEntity {
+fun mapToCachedEpisodeEntity(episodes: List<EpisodeDTO>): List<EpisodeEntity> {
+    return episodes.map { episodeDTO ->
+        episodeDTO.toEpisodeEntity()
+    }
+}
+
+fun EpisodeDTO.toEpisodeEntity(): EpisodeEntity {
     return EpisodeEntity(
-        id = episode.id,
-        airDate = episode.airDate,
-        characters = episode.characters,
-        created = episode.created,
-        episode = episode.episode,
-        name = episode.name,
-        url = episode.url
+        id = requireNotNull(id),
+        airDate = requireNotNull(airDate),
+        characters = requireNotNull(characters),
+        created = requireNotNull(created),
+        episode = requireNotNull(episode),
+        name = requireNotNull(name),
+        url = requireNotNull(url)
     )
 }
-
-fun mapFromEntityToEpisode(episodeEntity: EpisodeEntity): Episode {
+fun Episode.toCachedEpisodeEntity(): EpisodeEntity {
+    return EpisodeEntity(
+        id = id,
+        airDate = airDate,
+        characters = characters,
+        created = created,
+        episode = episode,
+        name = name,
+        url = url
+    )
+}
+fun EpisodeEntity.toEpisode(): Episode {
     return Episode(
-        id = episodeEntity.id,
-        airDate = episodeEntity.airDate,
-        characters = episodeEntity.characters,
-        created = episodeEntity.created,
-        episode = episodeEntity.episode,
-        name = episodeEntity.name,
-        url = episodeEntity.url
+        id = id,
+        airDate = airDate,
+        characters = characters,
+        created = created,
+        episode = episode,
+        name = name,
+        url = url
     )
 }
 
 fun mapToListEpisode(episodes: List<EpisodeEntity>): List<Episode> {
     return episodes.map { episode ->
-        mapFromEntityToEpisode(episode)
+        episode.toEpisode()
     }
 }

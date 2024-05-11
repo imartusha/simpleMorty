@@ -8,9 +8,16 @@ import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.paging.PagingData
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.simplemorty.databinding.CharacterInfoBinding
+import com.example.simplemorty.presentation.adapter.episode_adapter.EpisodesAdapter
+import com.example.simplemorty.presentation.adapter.episode_adapter.EpisodesListAdapter
+import com.example.simplemorty.utils.formatDateString
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -23,6 +30,9 @@ class InfoCharacterFragment : Fragment() {
     private val args: InfoCharacterFragmentArgs by navArgs()
 
     private val viewModel: InfoCharacterViewModel by viewModel<InfoCharacterViewModel>()
+
+    private lateinit var adapter: EpisodesListAdapter
+    private lateinit var layoutManager: LinearLayoutManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,24 +49,43 @@ class InfoCharacterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.dispatch(InfoCharacterViewModel.IntentScreenInfoCharacter.GetCharacter(args.id))
+        layoutManager = LinearLayoutManager(activity)
+
+        adapter = EpisodesListAdapter(emptyList()) { episode ->
+            val action = InfoCharacterFragmentDirections
+                .actionInfoFragmentToInfoEpisodeFragment(episode.id!!)
+            findNavController().navigate(action)
+        }
+
+        val recyclerView = binding.rvEpisodesInCharacters
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = adapter
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.state
+                viewModel._detailStateFlow
                     .collect { characterProfile ->
-                        binding.textViewCharacterName.text = characterProfile?.name
-                        binding.textViewGender.text = characterProfile?.gender
-                        binding.textViewSpecies.text = characterProfile?.species
-                        binding.textViewStatus.text = characterProfile?.status
-                        binding.textViewType.text = characterProfile?.type
-                        Glide.with(requireContext())
-                            .load(characterProfile?.image)
-                            .into(binding.imageViewCharacter)
-                        binding.textViewCreated.text = characterProfile?.created
-                        binding.textViewHomeland.text = characterProfile?.homeland.toString()
-                        binding.textViewEpisode.text = characterProfile?.episode.toString()
-                        binding.textViewLocation.text = characterProfile?.location.toString()
+                        with(binding) {
+                            textViewCharacterName.text = characterProfile?.name
+                            textViewGender.text = characterProfile?.gender
+                            textViewSpecies.text = characterProfile?.species
+                            textViewStatus.text = characterProfile?.status
+                            textViewType.text = characterProfile?.type
+                            Glide.with(requireContext())
+                                .load(characterProfile?.image)
+                                .into(imageViewCharacter)
+                            textViewCreated.text = characterProfile?.created?.formatDateString()
+                            textViewHomeland.text = characterProfile?.homeland?.name
+                            textViewLocation.text = characterProfile?.location?.name
+                        }
                     }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.episodesForCharacterInfo.collectLatest { episodes ->
+                    adapter.updateEpisodesList(episodes)
+                }
             }
         }
     }

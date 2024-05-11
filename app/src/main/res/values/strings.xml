@@ -13,7 +13,12 @@
     <string name="status">Status</string>
     <string name="species">Species</string>
     <string name="gender">Gender</string>
+    <string name="dimension">Dimension</string>
     <string name="character_name">Character Name</string>
     <string name="airdate">AirDate</string>
     <string name="welcome_to_rick_and_morty_app">Welcome To Rick And Morty App!</string>
+    <string name="location_name">Location Name</string>
+    <string name="episode_name">Episode Name</string>
+    <string name="episode_number">Episode Number</string>
+    <string name="air_date">Air Date</string>
 </resources>

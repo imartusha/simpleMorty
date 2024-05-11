@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
     id("androidx.navigation.safeargs.kotlin")
+    id ("kotlin-parcelize")
 
 }
 
@@ -77,7 +78,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 //materialDesign
-    implementation("com.google.android.material:material:1.12.0-alpha03")
+    implementation("com.google.android.material:material:1.12.0-rc01")
     //   implementation("androidx.legacy:legacy-support-v4:1.0.0")
 //navigation
     val nav_version = "2.7.7"
@@ -112,7 +113,7 @@ dependencies {
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.google.code.gson:gson:2.10")
+    implementation("com.google.code.gson:gson:2.10.1")
 
     //coil
     implementation("io.coil-kt:coil-compose:2.2.2")
@@ -126,9 +127,11 @@ dependencies {
 //    implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
 //    implementation("androidx.compose.runtime:runtime-rxjava2:1.6.1")
 
-    implementation("androidx.core:core-ktx:1.12.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("androidx.core:core-ktx:1.13.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    //   implementation("com.google.android.material:material:1.11.0")
+
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

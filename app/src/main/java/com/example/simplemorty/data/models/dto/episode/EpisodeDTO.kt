@@ -1,67 +1,46 @@
 package com.example.simplemorty.data.models.dto.episode
 
-import com.example.simplemorty.data.models.entity.episode.EpisodeEntity
-import com.example.simplemorty.data.models.response.Result
 import com.example.simplemorty.domain.models.Episode
 import com.google.gson.annotations.SerializedName
+import retrofit2.Response
 
 class EpisodeDTO(
 
     @SerializedName("air_date")
-    val airDate: String,
+    val airDate: String? = "",
+    @SerializedName("characters")
+    val characters: List<String>? = listOf(),
+    @SerializedName("created")
+    val created: String? = "",
+    @SerializedName("episode")
+    val episode: String? = "",
+    @SerializedName("id")
+    val id: Int? = 0,
+    @SerializedName("name")
+    val name: String? = "",
+    @SerializedName("url")
+    val url: String? = ""
+)
 
-    val characters: List<String>,
-    val created: String,
-    val episode: String,
-    val id: Int,
-    val name: String,
-    val url: String
-) : Result
+internal fun mapToEpisodeResponse(responseDTO: Response<EpisodeDTO>): Response<Episode> {
+    val episodeDTO = responseDTO.body()
+    val episode = episodeDTO?.toEpisode()
+    return Response.success(episode)
+}
 
-internal fun mapDtoToEpisode(episodeDTO: EpisodeDTO): Episode {
+internal fun EpisodeDTO.toEpisode(): Episode {
     return Episode(
-        airDate = episodeDTO.airDate,
-        characters = episodeDTO.characters,
-        created = episodeDTO.created,
-        episode = episodeDTO.episode,
-        id = episodeDTO.id,
-        name = episodeDTO.name,
-        url = episodeDTO.url
+        airDate = requireNotNull(airDate),
+        characters = requireNotNull(characters),
+        created = requireNotNull(created),
+        episode = requireNotNull(episode),
+        id = requireNotNull(id),
+        name = requireNotNull(name),
+        url = requireNotNull(url)
     )
 }
-
-internal fun mapDtoToEpisodeEntity(episodeDTO: EpisodeDTO): EpisodeEntity {
-    return EpisodeEntity(
-        airDate = episodeDTO.airDate,
-        characters = episodeDTO.characters,
-        created = episodeDTO.created,
-        episode = episodeDTO.episode,
-        id = episodeDTO.id,
-        name = episodeDTO.name,
-        url = episodeDTO.url
-    )
-}
-
-internal fun mapEpisodeToDTO(episode: Episode): EpisodeDTO {
-    return EpisodeDTO(
-        airDate = episode.airDate,
-        characters = episode.characters,
-        created = episode.created,
-        episode = episode.episode,
-        id = episode.id,
-        name = episode.name,
-        url = episode.url
-    )
-}
-
-fun mapDtoToEntityEpisodeList(episodesDto: List<EpisodeDTO>): List<EpisodeEntity> {
-    return episodesDto.map { episodeDto ->
-        mapDtoToEpisodeEntity(episodeDto)
-    }
-}
-
 fun mapDtoToEpisodeList(episodes: List<EpisodeDTO>): List<Episode> {
-    return episodes.map { episode ->
-        mapDtoToEpisode(episode)
+    return episodes.map { episodeDTO ->
+        episodeDTO.toEpisode()
     }
 }
