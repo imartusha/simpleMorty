@@ -1,9 +1,14 @@
 package com.example.simplemorty.data.repository.location
 
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.simplemorty.data.database.character.DataBase
+import com.example.simplemorty.data.models.dto.location.mapToLocationResponse
+import com.example.simplemorty.data.models.entity.location.LocationEntity
+import com.example.simplemorty.data.models.entity.location.toLocation
 import com.example.simplemorty.data.models.response.ApiResponse
 import com.example.simplemorty.data.network.api.location.LocationApi
 import com.example.simplemorty.domain.models.Location
@@ -16,31 +21,38 @@ import kotlinx.coroutines.CoroutineScope
 
 internal class LocationsRepositoryImpl(
     private val locationApi: LocationApi,
+    private val dataBase: DataBase,
     private val scope: CoroutineScope
 ) : LocationsRepository {
 
-    override fun getLocationById(id: Int): Flow<ApiResponse<Location?>> =
-        result {
-            locationApi.getLocationById(id=id)
-        }.flowOn(Dispatchers.IO)
+    private val cacheDao = dataBase.cachedLocationDao
 
-    override fun getLocations(): Flow<PagingData<Location>> {
+    companion object {
+        private const val NETWORK_PAGE_SIZE_LOCATION = 7
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getLocations(): Flow<PagingData<LocationEntity>> {
         return Pager(config = PagingConfig(
-            pageSize = 7, enablePlaceholders = false
+            pageSize = NETWORK_PAGE_SIZE_LOCATION, enablePlaceholders = false
         ),
-            pagingSourceFactory = { LocationPagingSource(locationApi) }
+            initialKey = 1,
+            remoteMediator = LocationRemoteMediator(
+                locationApi = locationApi,
+                database = dataBase
+            ),
+            pagingSourceFactory = {
+                cacheDao.getLocations()
+            }
         ).flow
             .cachedIn(scope)
     }
 
+    override fun getLocationById(id: Int): Flow<ApiResponse<Location?>> =
+        result {
+            mapToLocationResponse(locationApi.getLocationById(id = id))
+        }.flowOn(Dispatchers.IO)
 
-//    override suspend fun getAllLocations(): List<Location> {
-//        return withContext(Dispatchers.IO) {
-//            val commonResponse = locationApi.getAllLocations()
-//            val locationsDtoList = commonResponse.results
-//            val locationsEntities = mapDtoToEntityLocationList(locationsDtoList)
-//
-//            mapDtoToLocationList(locations = locationsDtoList)
-//        }
-//    }
+    override suspend fun getLocationByIdFromDb(id: Int): Location? =
+        dataBase.cachedLocationDao.getLocationById(id = id)?.toLocation()
 }

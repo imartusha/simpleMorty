@@ -1,17 +1,16 @@
 package com.example.simplemorty.data.models.entity.character
 
-import android.webkit.WebStorage.Origin
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Homeland
 import com.example.simplemorty.domain.models.Location
-import com.example.simplemorty.utils.ConvertersCharacter
+import com.example.simplemorty.utils.Converter
 import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "favorite_entity")
-@TypeConverters(ConvertersCharacter::class)
+@TypeConverters(Converter::class)
 data class FavoriteEntity(
     @PrimaryKey(autoGenerate = true)
     @field:SerializedName("id")

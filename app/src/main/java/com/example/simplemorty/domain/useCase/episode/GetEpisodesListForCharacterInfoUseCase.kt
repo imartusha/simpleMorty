@@ -8,12 +8,12 @@ class GetEpisodesListForCharacterInfoUseCase(
     private val episodesRepository: EpisodesRepository
 ) {
     suspend fun getEpisodesListForCharacterInfo(characterProfile: CharacterProfile): List<Episode> {
-        val episodeIdsList = characterProfile.episode.map { episodeUrl ->
+        val episodeIdsList = characterProfile.episode!!.map { episodeUrl ->
             episodeUrl.substringAfterLast("/")
         }
         val episodesFromDb = episodesRepository.getMultipleEpisodeFromDb(episodeIdsList)
         return episodesFromDb.ifEmpty {
-            episodesRepository.getMultipleEpisode(episodeIdsList.joinToString(","))
+             episodesRepository.getMultipleEpisode(episodeIdsList.joinToString(","))
         }
     }
 }

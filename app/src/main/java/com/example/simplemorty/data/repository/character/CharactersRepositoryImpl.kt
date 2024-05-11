@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import com.example.simplemorty.utils.result
 
-
 internal class CharactersRepositoryImpl(
     private val characterApi: CharacterApi,
     private val dataBase: DataBase,
@@ -39,7 +38,7 @@ internal class CharactersRepositoryImpl(
     @OptIn(ExperimentalPagingApi::class)
     override suspend fun getCharacters(): Flow<PagingData<CharacterEntity>> {
         return Pager(
-            config = PagingConfig(pageSize = 42, enablePlaceholders = false),
+            config = PagingConfig(pageSize = 42,prefetchDistance = 10, enablePlaceholders = false),
             initialKey = 1,
             remoteMediator = CharacterRemoteMediator(
                 characterApi = characterApi,
@@ -66,7 +65,7 @@ internal class CharactersRepositoryImpl(
     }
 
     override suspend fun getMultipleCharacters(characterIdsList: String): List<CharacterProfile> {
-        return mapDTOsToCharacterProfiles(characterApi.getMultipleCharacters(characterIdsList))
+        return mapDTOsToCharacterProfiles(characterApi.getMultipleCharacters("$characterIdsList,"))
     }
 
     override fun getSearch(
@@ -110,29 +109,4 @@ internal class CharactersRepositoryImpl(
         withContext(Dispatchers.IO) {
             favoriteDao.isCharacterInFavorites(id)
         }
-
-
-//    override suspend fun getMultipleCharacters(characters: List<String>): Flow<PagingData<CharacterProfile>> {
-//        val charactersDTOList =
-//            characterApi.getMultipleCharactersFromApi(getIdesCharactersList(characters))
-//        val profiles = mapDTOsToCharacterProfiles(characters = charactersDTOList)
-//        val pagingData: PagingData<CharacterProfile> = PagingData.from(profiles)
-//        return flowOf(pagingData)
-//    }
-//
-//    override suspend fun getAllCharactersFromLocalDb(): List<CharacterProfile> {
-//        return mapEntitiesToCharacterProfiles(characterDao.getAllCharacters())
-//    }
-//
-//    private fun getIdesCharactersList(characters: List<String>): List<Int> {
-//        val listCharacters: MutableList<Int> = mutableListOf()
-//        characters.forEach { it ->
-//            val characterId = it.substringAfterLast("/", "").toInt()
-//            if (characterId == 0) {
-//                Log.e("Except in Episodes", "Not found id")
-//            }
-//            listCharacters.add(characterId)
-//        }
-//        return listCharacters
-//    }
 }

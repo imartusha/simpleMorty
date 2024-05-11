@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.simplemorty.data.models.entity.character.FavoriteEntity
 import kotlinx.coroutines.flow.Flow
+
 @Dao
 interface FavoriteCharacterDao {
     @Query("DELETE FROM favorite_entity")

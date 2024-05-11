@@ -27,10 +27,3 @@ data class CommonResponse<T>(
     @SerializedName("results")
     val results: List<T>? = emptyList()
 )
-
-data class LocationResponse(
-    @SerializedName("info")
-    val infoDTO: InfoDTO? = InfoDTO(),
-    @SerializedName("results")
-    val results: List<Location>? = emptyList()
-)

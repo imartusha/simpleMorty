@@ -1,64 +1,42 @@
 package com.example.simplemorty.data.models.dto.location
 
-import com.example.simplemorty.data.models.dto.info.InfoDTO
-import com.example.simplemorty.data.models.entity.LocationEntity
-import com.example.simplemorty.domain.models.Info
 import com.example.simplemorty.domain.models.Location
 import com.google.gson.annotations.SerializedName
+import retrofit2.Response
 
 class LocationDTO(
-    val created: String,
-    val dimension: String,
-    val id: Int,
-    val name: String,
-    val residents: List<String>,
-    val type: String,
-    val url: String
+
+    @SerializedName("created")
+    val created: String? = "",
+    @SerializedName("dimension")
+    val dimension: String? = "",
+    @SerializedName("id")
+    val id: Int? = 0,
+    @SerializedName("name")
+    val name: String? = "",
+    @SerializedName("residents")
+    val residents: List<String>? = listOf(),
+    @SerializedName("type")
+    val type: String? = "",
+    @SerializedName("url")
+    val url: String? = ""
 )
 
-internal fun mapLocationDtoToDomain(locationDTO: LocationDTO): Location {
+internal fun mapToLocationResponse(responseDTO: Response<LocationDTO>): Response<Location> {
+    val episodeDTO = responseDTO.body()
+    val episode = episodeDTO?.toLocation()
+    return Response.success(episode)
+}
+
+internal fun LocationDTO.toLocation(): Location {
     return Location(
-        created = locationDTO.created,
-        dimension = locationDTO.dimension,
-        id = locationDTO.id,
-        name = locationDTO.name,
-        residents = locationDTO.residents,
-        type = locationDTO.type,
-        url = locationDTO.url
+        id = requireNotNull(id),
+        name = requireNotNull(name),
+        created = requireNotNull(created),
+        dimension = requireNotNull(dimension),
+        residents = requireNotNull( residents),
+        type = requireNotNull(type),
+        url = requireNotNull(url)
     )
 }
 
-internal fun mapDtoToLocationEntity(locationDTO: LocationDTO): LocationEntity {
-    return LocationEntity(
-        created = locationDTO.created,
-        dimension = locationDTO.dimension,
-        id = locationDTO.id,
-        name = locationDTO.name,
-        residents = locationDTO.residents,
-        type = locationDTO.type,
-        url = locationDTO.url
-    )
-}
-
-internal fun mapDomainToLocationDto(location: Location): LocationDTO {
-    return LocationDTO(
-        created = location.created,
-        dimension = location.dimension,
-        id = location.id,
-        name = location.name,
-        residents = location.residents,
-        type = location.type,
-        url = location.url
-    )
-}
-fun mapDtoToLocationList(locations: List<LocationDTO>): List<Location> {
-    return locations.map { location ->
-        mapLocationDtoToDomain(location)
-    }
-}
-
-fun mapDtoToEntityLocationList(locations: List<LocationDTO>): List<LocationEntity> {
-    return locations.map { location ->
-        mapDtoToLocationEntity(location)
-    }
-}

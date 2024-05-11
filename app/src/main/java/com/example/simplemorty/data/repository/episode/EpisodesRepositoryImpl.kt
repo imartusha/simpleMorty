@@ -1,6 +1,5 @@
-package com.example.simplemorty.data.repository
+package com.example.simplemorty.data.repository.episode
 
-import android.util.Log
 import androidx.paging.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -9,12 +8,11 @@ import com.example.simplemorty.utils.result
 import com.example.simplemorty.data.database.character.DataBase
 import com.example.simplemorty.data.models.dto.episode.mapDtoToEpisodeList
 import com.example.simplemorty.data.models.dto.episode.mapToEpisodeResponse
+import com.example.simplemorty.data.models.entity.episode.EpisodeEntity
 import com.example.simplemorty.data.models.entity.episode.mapToListEpisode
 import com.example.simplemorty.data.models.entity.episode.toEpisode
 import com.example.simplemorty.data.models.response.ApiResponse
 import com.example.simplemorty.data.network.api.episode.EpisodeApi
-import com.example.simplemorty.data.repository.episode.EpisodePagingSource
-import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Episode
 import com.example.simplemorty.domain.repository.EpisodesRepository
 import kotlinx.coroutines.CoroutineScope
@@ -28,16 +26,25 @@ internal class EpisodesRepositoryImpl(
     private val scope: CoroutineScope
 ) : EpisodesRepository {
 
+    private val cacheDao = dataBase.cachedEpisodeDao
+
     companion object {
         private const val NETWORK_PAGE_SIZE_EPISODE = 3
     }
 
-    override fun getEpisodes(): Flow<PagingData<Episode>> {
-        Log.e("MyTag", "getEpispdes в импл")
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getEpisodes(): Flow<PagingData<EpisodeEntity>> {
         return Pager(config = PagingConfig(
             pageSize = NETWORK_PAGE_SIZE_EPISODE, enablePlaceholders = false
         ),
-            pagingSourceFactory = { EpisodePagingSource(episodeApi) }
+            initialKey = 1,
+            remoteMediator = EpisodeRemoteMediator(
+                episodeApi = episodeApi,
+                database = dataBase
+            ),
+            pagingSourceFactory = {
+                cacheDao.getEpisodes()
+            }
         ).flow
             .cachedIn(scope)
     }
@@ -47,7 +54,7 @@ internal class EpisodesRepositoryImpl(
             mapToEpisodeResponse(episodeApi.getEpisodeById(id))
         }.flowOn(Dispatchers.IO)
 
-    override suspend fun getEpisodesByIdFromDb(id: Int): Episode? =
+    override suspend fun getEpisodeByIdFromDb(id: Int): Episode? =
         dataBase.cachedEpisodeDao.getEpisodesById(id = id)?.toEpisode()
 
     override suspend fun getMultipleEpisodeFromDb(episodeIdsList: List<String>): List<Episode> {
@@ -57,6 +64,6 @@ internal class EpisodesRepositoryImpl(
     }
 
     override suspend fun getMultipleEpisode(episodeIdsList: String): List<Episode> =
-        mapDtoToEpisodeList(episodeApi.getMultipleEpisode(episodeIdsList))
+        mapDtoToEpisodeList(episodeApi.getMultipleEpisode("$episodeIdsList,"))
 
 }

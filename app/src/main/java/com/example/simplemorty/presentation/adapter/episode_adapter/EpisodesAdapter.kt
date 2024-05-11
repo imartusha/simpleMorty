@@ -5,15 +5,13 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.simplemorty.databinding.ItemEpisodeBinding
+import com.example.simplemorty.databinding.EpisodeItemBinding
 import com.example.simplemorty.domain.models.Episode
 
 class EpisodesAdapter(
     private val onClick: (Episode) -> Unit
 ) : PagingDataAdapter<Episode, RecyclerView.ViewHolder>(EpisodeDiffUtil) {
 
-    //    private lateinit var itemEpisodeBinding: ItemEpisodeBinding
-//    private val binding get() = itemEpisodeBinding
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = getItem(position)
 
@@ -26,11 +24,11 @@ class EpisodesAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EpisodeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ItemEpisodeBinding.inflate(inflater, parent, false)
+        val binding = EpisodeItemBinding.inflate(inflater, parent, false)
         return EpisodeViewHolder(binding)
     }
 
-    inner class EpisodeViewHolder(private val binding: ItemEpisodeBinding) :
+    inner class EpisodeViewHolder(private val binding: EpisodeItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(episodeList: Episode) {

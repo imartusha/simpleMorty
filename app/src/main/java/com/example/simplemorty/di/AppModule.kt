@@ -12,11 +12,15 @@ import okhttp3.logging.HttpLoggingInterceptor
 import com.example.simplemorty.data.network.api.character.CharacterApi
 import com.example.simplemorty.data.network.api.episode.EpisodeApi
 import com.example.simplemorty.data.network.api.location.LocationApi
-import com.example.simplemorty.data.repository.EpisodesRepositoryImpl
 import com.example.simplemorty.data.repository.character.CharactersRepositoryImpl
 import com.example.simplemorty.data.repository.location.LocationsRepositoryImpl
 import com.example.simplemorty.data.repository.character.CharacterPagingSource
 import com.example.simplemorty.data.repository.character.CharacterRemoteMediator
+import com.example.simplemorty.data.repository.episode.EpisodePagingSource
+import com.example.simplemorty.data.repository.episode.EpisodeRemoteMediator
+import com.example.simplemorty.data.repository.episode.EpisodesRepositoryImpl
+import com.example.simplemorty.data.repository.location.LocationPagingSource
+import com.example.simplemorty.data.repository.location.LocationRemoteMediator
 import com.example.simplemorty.domain.repository.CharactersRepository
 import com.example.simplemorty.domain.repository.EpisodesRepository
 import com.example.simplemorty.domain.repository.LocationsRepository
@@ -28,11 +32,12 @@ import com.example.simplemorty.domain.useCase.character.GetCharactersListForInfo
 import com.example.simplemorty.domain.useCase.character.IsCharacterInFavoritesUseCase
 import com.example.simplemorty.domain.useCase.episode.GetEpisodeByIdUseCase
 import com.example.simplemorty.domain.useCase.episode.GetEpisodesListForCharacterInfoUseCase
-import com.example.simplemorty.domain.useCase.location.GetInfoLocationByIdUseCase
+import com.example.simplemorty.domain.useCase.location.GetLocationByIdUseCase
 import com.example.simplemorty.presentation.screens.characters_list.CharactersViewModel
 import com.example.simplemorty.presentation.screens.episodes_list.EpisodesViewModel
 import com.example.simplemorty.presentation.screens.character_info.InfoCharacterViewModel
 import com.example.simplemorty.presentation.screens.episode_info.InfoEpisodeViewModel
+import com.example.simplemorty.presentation.screens.location_info.InfoLocationViewModel
 import com.example.simplemorty.presentation.screens.locations_list.LocationsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,12 +73,11 @@ val appModule = module {
     }
     viewModel<EpisodesViewModel> {
         EpisodesViewModel(
-            getAllEpisodes = get()
+            getAllEpisodesUseCase = get()
         )
     }
     viewModel<LocationsViewModel> {
         LocationsViewModel(
-            getInfoLocationByIdUseCase = get(),
             getAllLocationsUseCase = get()
         )
     }
@@ -87,6 +91,12 @@ val appModule = module {
     viewModel<InfoEpisodeViewModel> {
         InfoEpisodeViewModel(
             getEpisodeByIdUseCase = get(),
+            getCharactersListForInfo = get()
+        )
+    }
+    viewModel<InfoLocationViewModel> {
+        InfoLocationViewModel(
+            getLocationByIdUseCase = get(),
             getCharactersListForInfo = get()
         )
     }
@@ -206,11 +216,23 @@ val appModule = module {
     single<LocationsRepository> {
         LocationsRepositoryImpl(
             locationApi = get(),
+            dataBase = get(),
             scope = get()
         )
     }
-    factory<GetInfoLocationByIdUseCase> {
-        GetInfoLocationByIdUseCase(
+    single<LocationRemoteMediator> {
+        LocationRemoteMediator(
+            locationApi = get(),
+            database = get()
+        )
+    }
+    single<LocationPagingSource> {
+        LocationPagingSource(
+            locationApi = get()
+        )
+    }
+    factory<GetLocationByIdUseCase> {
+        GetLocationByIdUseCase(
             locationsRepository = get()
         )
     }
@@ -225,6 +247,17 @@ val appModule = module {
             episodeApi = get(),
             dataBase = get(),
             scope = get()
+        )
+    }
+    single<EpisodeRemoteMediator> {
+        EpisodeRemoteMediator(
+            episodeApi = get(),
+            database = get()
+        )
+    }
+    single<EpisodePagingSource> {
+        EpisodePagingSource(
+            episodeApi = get()
         )
     }
     factory<GetEpisodeByIdUseCase> {
@@ -242,39 +275,4 @@ val appModule = module {
             episodesRepository = get()
         )
     }
-//    single<EpisodesDataBase> {
-//        Room.databaseBuilder(
-//            androidContext(),
-//            EpisodesDataBase::class.java,
-//            EPISODES_DATA_BASE
-//        )
-//            .fallbackToDestructiveMigration()
-//            .build()
-//    }
-//    single<EpisodeDao> {
-//        get<EpisodesDataBase>()
-//            .getEpisodeDao()
-//    }
-//    single<EpisodeRemoteKeyDao> {
-//        get<EpisodesDataBase>()
-//            .remoteKeysDao
-//    }
-//    single<CachedEpisodeDao> {
-//        get<EpisodesDataBase>()
-//            .cacheDao
-//    }
-
-
-//    single<EpisodePagingSource> {
-//        EpisodePagingSource(
-//            episodeApi = get()
-//        )
-//    }
-
-//    single<EpisodeRemoteMediator> {
-//        EpisodeRemoteMediator(
-//            episodeApi = get(),
-//            database = get()
-//        )
-//    }
 }

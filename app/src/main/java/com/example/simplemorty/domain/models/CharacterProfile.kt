@@ -3,17 +3,17 @@ package com.example.simplemorty.domain.models
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.simplemorty.data.models.entity.character.cach.CharacterEntity
-import com.example.simplemorty.utils.ConvertersCharacter
+import com.example.simplemorty.utils.Converter
 import com.google.gson.annotations.SerializedName
 
-@TypeConverters(ConvertersCharacter::class)
+@TypeConverters(Converter::class)
 data class CharacterProfile(
     @PrimaryKey @field:SerializedName("id")
     val id: Int? = 0,
     @SerializedName("created")
     val created: String? = "",
     @SerializedName("episode")
-    val episode: List<String>,
+    val episode: List<String>? = listOf(),
     @SerializedName("gender")
     val gender: String? = "",
     @SerializedName("image")

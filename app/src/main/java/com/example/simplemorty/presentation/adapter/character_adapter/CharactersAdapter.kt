@@ -7,7 +7,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.simplemorty.databinding.ItemCharacterBinding
+import com.example.simplemorty.databinding.CharacterItemBinding
 import com.example.simplemorty.domain.models.CharacterProfile
 
 class CharactersAdapter(
@@ -24,11 +24,11 @@ class CharactersAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ItemCharacterBinding.inflate(inflater, parent, false)
+        val binding = CharacterItemBinding.inflate(inflater, parent, false)
         return CharacterViewHolder(binding)
     }
 
-    inner class CharacterViewHolder(private val binding: ItemCharacterBinding) :
+    inner class CharacterViewHolder(private val binding: CharacterItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(character: CharacterProfile) {

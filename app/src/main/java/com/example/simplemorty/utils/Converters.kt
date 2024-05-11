@@ -6,7 +6,7 @@ import com.example.simplemorty.domain.models.Location
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-object ConvertersCharacter {
+object Converter {
     private val gson = Gson()
 
     @TypeConverter
@@ -41,17 +41,18 @@ object ConvertersCharacter {
         return gson.toJson(homeland)
     }
 }
-object ConvertersEpisode {
-    private val gson = Gson()
 
-    @TypeConverter
-    fun fromStringToList(value: String?): List<String> {
-        val listType = object : TypeToken<List<String?>>() {}.type
-        return gson.fromJson(value, listType)
-    }
-
-    @TypeConverter
-    fun fromListToString(list: List<String?>): String {
-        return gson.toJson(list)
-    }
-}
+//object ConvertersEpisode {
+//    private val gson = Gson()
+//
+//    @TypeConverter
+//    fun fromStringToList(value: String?): List<String> {
+//        val listType = object : TypeToken<List<String?>>() {}.type
+//        return gson.fromJson(value, listType)
+//    }
+//
+//    @TypeConverter
+//    fun fromListToString(list: List<String?>): String {
+//        return gson.toJson(list)
+//    }
+//}

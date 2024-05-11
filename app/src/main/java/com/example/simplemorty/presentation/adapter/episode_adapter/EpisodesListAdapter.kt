@@ -3,7 +3,7 @@ package com.example.simplemorty.presentation.adapter.episode_adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.simplemorty.databinding.ItemEpisodeBinding
+import com.example.simplemorty.databinding.EpisodeItemBinding
 import com.example.simplemorty.domain.models.Episode
 
 class EpisodesListAdapter(
@@ -13,7 +13,7 @@ class EpisodesListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EpisodeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ItemEpisodeBinding.inflate(inflater, parent, false)
+        val binding = EpisodeItemBinding.inflate(inflater, parent, false)
         return EpisodeViewHolder(binding)
     }
 
@@ -23,7 +23,7 @@ class EpisodesListAdapter(
 
     override fun getItemCount(): Int = episodes.size
 
-    inner class EpisodeViewHolder(private val binding: ItemEpisodeBinding) :
+    inner class EpisodeViewHolder(private val binding: EpisodeItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(episode: Episode) {

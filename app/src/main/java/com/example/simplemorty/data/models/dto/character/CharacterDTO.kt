@@ -1,17 +1,12 @@
 package com.example.simplemorty.data.models.dto.character
 
 import androidx.room.PrimaryKey
-import com.example.simplemorty.data.models.dto.info.InfoDTO
-import com.example.simplemorty.data.models.entity.character.CharacterEntity
-import com.example.simplemorty.data.models.entity.character.toCharacterEntity
-import com.example.simplemorty.data.models.entity.character.toCharacterProfile
+import com.example.simplemorty.data.models.entity.character.cach.CharacterEntity
 import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Location
 import com.example.simplemorty.domain.models.Homeland
-import com.example.simplemorty.domain.models.Info
 import com.google.gson.annotations.SerializedName
 import retrofit2.Response
-
 
 class CharacterDTO(
     @PrimaryKey @field:SerializedName("id")
@@ -97,23 +92,5 @@ internal fun CharacterProfile.toCharacterDto(): CharacterDTO {
 fun mapDTOsToCharacterProfiles(characters: List<CharacterDTO>): List<CharacterProfile> {
     return characters.map { characterDTO ->
         characterDTO.toCharacterProfile()
-    }
-}
-
-fun mapEntitiesToCharacterProfiles(characters: List<CharacterEntity>): List<CharacterProfile> {
-    return characters.map { characterEntity ->
-        characterEntity.toCharacterProfile()
-    }
-}
-
-fun mapProfilesToCharacterEntities(characters: List<CharacterProfile>): List<CharacterEntity> {
-    return characters.map { characterProfile ->
-        characterProfile.toCharacterEntity()
-    }
-}
-
-fun mapDTOsToCharacterEntities(characters: List<CharacterDTO>): List<CharacterEntity> {
-    return characters.map { characterDTO ->
-        characterDTO.toCharacterEntity()
     }
 }

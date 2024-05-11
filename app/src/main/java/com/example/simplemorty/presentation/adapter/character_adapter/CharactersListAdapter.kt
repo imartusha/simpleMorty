@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.simplemorty.databinding.ItemCharacterBinding
+import com.example.simplemorty.databinding.CharacterItemBinding
 import com.example.simplemorty.domain.models.CharacterProfile
 
 class CharactersListAdapter(
@@ -15,7 +15,7 @@ class CharactersListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ItemCharacterBinding.inflate(inflater, parent, false)
+        val binding = CharacterItemBinding.inflate(inflater, parent, false)
         return CharacterViewHolder(binding)
     }
 
@@ -25,7 +25,7 @@ class CharactersListAdapter(
 
     override fun getItemCount(): Int = characters.size
 
-    inner class CharacterViewHolder(private val binding: ItemCharacterBinding) :
+    inner class CharacterViewHolder(private val binding: CharacterItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(character: CharacterProfile) {

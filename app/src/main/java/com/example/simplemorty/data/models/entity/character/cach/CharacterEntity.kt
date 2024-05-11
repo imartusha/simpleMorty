@@ -9,12 +9,12 @@ import com.example.simplemorty.data.models.response.CommonResponse
 import com.example.simplemorty.domain.models.CharacterProfile
 import com.example.simplemorty.domain.models.Homeland
 import com.example.simplemorty.domain.models.Location
-import com.example.simplemorty.utils.ConvertersCharacter
+import com.example.simplemorty.utils.Converter
 import com.google.gson.annotations.SerializedName
 import retrofit2.Response
 
 @Entity(tableName = "cached_characters")
-@TypeConverters(ConvertersCharacter::class)
+@TypeConverters(Converter::class)
 data class CharacterEntity(
     @PrimaryKey @field:SerializedName("id")
     val id: Int? = 0,

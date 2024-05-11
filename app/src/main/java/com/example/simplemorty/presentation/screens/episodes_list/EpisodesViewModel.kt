@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 
 class EpisodesViewModel(
-    private val getAllEpisodes: GetAllEpisodesUseCase
+    private val getAllEpisodesUseCase: GetAllEpisodesUseCase
 ) : ViewModel() {
 
     private val _episodesListStateFlow: MutableSharedFlow<PagingData<Episode>> = MutableSharedFlow()
@@ -28,7 +28,7 @@ class EpisodesViewModel(
 
     private fun fetchEpisodes() {
         viewModelScope.launch {
-            getAllEpisodes.getAllEpisodes().flowOn(Dispatchers.IO).collect {
+            getAllEpisodesUseCase.getAllEpisodes().flowOn(Dispatchers.IO).collect {
                 _episodesListStateFlow.emit(it)
             }
 

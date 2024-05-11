@@ -11,8 +11,8 @@ class GetEpisodeByIdUseCase(
     fun getEpisodeById(id: Int): Flow<ApiResponse<Episode?>> {
         return episodesRepository.getEpisodesById(id = id)
     }
-    suspend fun getEpisodesByIdFromDb(id: Int): Episode?{
-        return episodesRepository.getEpisodesByIdFromDb(id = id)
+    suspend fun getEpisodeByIdFromDb(id: Int): Episode?{
+        return episodesRepository.getEpisodeByIdFromDb(id = id)
     }
 
 }

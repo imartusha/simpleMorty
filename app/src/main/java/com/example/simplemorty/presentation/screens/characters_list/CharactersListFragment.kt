@@ -12,14 +12,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.simplemorty.databinding.CharacterslistBinding
+import com.example.simplemorty.databinding.CharacterListBinding
 import com.example.simplemorty.presentation.adapter.character_adapter.CharactersAdapter
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CharactersListFragment : Fragment() {
 
-    private lateinit var fragmentCharactersBinding: CharacterslistBinding
+    private lateinit var fragmentCharactersBinding: CharacterListBinding
     private val binding get() = fragmentCharactersBinding
 
     private val viewModel: CharactersViewModel by viewModel<CharactersViewModel>()
@@ -32,7 +32,7 @@ class CharactersListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        fragmentCharactersBinding = CharacterslistBinding.inflate(
+        fragmentCharactersBinding = CharacterListBinding.inflate(
             inflater, container, false
         )
         return fragmentCharactersBinding.root

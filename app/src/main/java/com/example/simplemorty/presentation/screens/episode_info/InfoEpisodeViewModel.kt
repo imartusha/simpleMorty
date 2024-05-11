@@ -27,8 +27,8 @@ class InfoEpisodeViewModel(
     private val progressStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val _progressStateFlow: StateFlow<Boolean> = progressStateFlow
 
-    private val charactersFromLocationStateFlow: MutableSharedFlow<List<CharacterProfile>?> =
-        MutableSharedFlow()
+//    private val charactersFromLocationStateFlow: MutableSharedFlow<List<CharacterProfile>?> =
+//        MutableSharedFlow()
 
     fun dispatch(intentScreenInfoEpisode: IntentScreenInfoEpisode) {
         when (intentScreenInfoEpisode) {
@@ -39,9 +39,10 @@ class InfoEpisodeViewModel(
 
     private fun getEpisodeById(id: Int) {
         viewModelScope.launch {
-            val episodeFfromDb = getEpisodeByIdUseCase.getEpisodesByIdFromDb(id = id)
-            if (episodeFfromDb != null) {
-                episodeByIdStateFlow.emit((episodeFfromDb))
+            val episodeFromDb = getEpisodeByIdUseCase.getEpisodeByIdFromDb(id = id)
+            if (episodeFromDb != null) {
+                episodeByIdStateFlow.emit((episodeFromDb))
+                getListCharactersForEpisode(episodeFromDb)
             } else {
                 getEpisodeByIdUseCase.getEpisodeById(id).collectLatest {
                     when (it) {
@@ -83,30 +84,6 @@ class InfoEpisodeViewModel(
             characters
         }
     }
-
-//    private fun updateEpisodeInfo(
-//        state: ScreenStateEpisode,
-//        episode: Episode,
-//        characters: List<CharacterProfile> // Принимаем список персонажей
-//    ): ScreenStateEpisode {
-//        return state.copy(
-//            name = episode.name,
-//            episode = episode.episode,
-//            airDate = episode.airDate.formatDateString(),
-//            created = episode.created.formatDateString(),
-//            characters = characters,
-//            url = episode.url
-//        )
-//    }
-
-//    data class ScreenStateEpisode(
-//        val name: String? = null,
-//        val episode: String? = null,
-//        val airDate: String? = null,
-//        val created: String? = null,
-//        val characters: List<CharacterProfile>? = null,
-//        val url: String? = null
-//    )
 
     sealed interface IntentScreenInfoEpisode {
 
