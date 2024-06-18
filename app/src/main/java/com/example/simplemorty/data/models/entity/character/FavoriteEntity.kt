@@ -14,7 +14,7 @@ import com.google.gson.annotations.SerializedName
 data class FavoriteEntity(
     @PrimaryKey(autoGenerate = true)
     @field:SerializedName("id")
-    val id: Int? = null,
+    val id: Int,
     @SerializedName("created")
     val created: String? = "",
     @SerializedName("episode")

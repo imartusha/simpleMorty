@@ -127,7 +127,8 @@ dependencies {
 //    implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
 //    implementation("androidx.compose.runtime:runtime-rxjava2:1.6.1")
 
-
+    implementation("com.github.kirich1409:viewbindingpropertydelegate-full:1.5.9")
+    implementation("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.9")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("androidx.core:core-ktx:1.13.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

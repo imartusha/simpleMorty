@@ -10,7 +10,7 @@ import retrofit2.Response
 
 class CharacterDTO(
     @PrimaryKey @field:SerializedName("id")
-    val id: Int? = 0,
+    val id: Int,
     @SerializedName("created")
     val created: String? = "",
     @SerializedName("episode")
